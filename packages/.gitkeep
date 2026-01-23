@@ -1,0 +1,11 @@
+# This directory will contain shared packages
+#
+# Structure:
+# - packages/design-system/
+# - packages/ui-components/
+# - packages/shared-types/
+# - packages/utils/
+# - packages/api-client/
+# - packages/config/
+# - packages/eslint-config/
+# - packages/tsconfig/

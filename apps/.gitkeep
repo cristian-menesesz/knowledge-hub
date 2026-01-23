@@ -1,0 +1,15 @@
+# This directory will contain all microservices and microfrontends
+# 
+# Structure:
+# - apps/services/content-service/
+# - apps/services/auth-service/
+# - apps/services/comment-service/
+# - apps/services/media-service/
+# - apps/services/analytics-service/
+# - apps/mfe/shell/
+# - apps/mfe/content-reader/
+# - apps/mfe/content-editor/
+# - apps/mfe/admin-dashboard/
+# - apps/mfe/search/
+# - apps/mfe/discussion/
+# - apps/mfe/playground/

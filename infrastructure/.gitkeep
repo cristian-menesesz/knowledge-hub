@@ -1,0 +1,8 @@
+# This directory will contain infrastructure as code
+#
+# Structure:
+# - infrastructure/terraform/
+# - infrastructure/kubernetes/
+# - infrastructure/helm/
+# - infrastructure/docker/
+# - infrastructure/scripts/

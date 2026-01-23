@@ -1,0 +1,8 @@
+# This directory will contain documentation
+#
+# Structure:
+# - docs/adr/ (Architecture Decision Records)
+# - docs/runbooks/
+# - docs/api/
+# - docs/architecture/
+# - docs/guides/
