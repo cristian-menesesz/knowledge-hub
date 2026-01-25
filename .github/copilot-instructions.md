@@ -6,6 +6,25 @@ This is a **microservices-based knowledge management platform** with microfronte
 featuring content management, real-time discussions, interactive code playgrounds, and comprehensive
 analytics.
 
+## Deployment Strategy
+
+**IMPORTANT**: Development follows a **local-first approach**:
+
+1. **Phase 0-2**: Local development using Docker Compose
+   - All features developed and tested locally
+   - Full infrastructure stack runs on development machine
+   - Zero cloud costs during feature development
+   - `docker compose up -d` for complete environment
+
+2. **Phase 3+**: Transition to cloud deployment (AWS)
+   - Deploy when features are complete and tested
+   - Use Terraform for infrastructure provisioning
+   - Migrate from Docker Compose to AWS managed services
+   - Consider cost optimization strategies
+
+**Current Status**: Building features locally with Docker Compose. AWS deployment planned for later
+phases.
+
 ## Core Technologies & Architecture
 
 ### Microservices Stack
@@ -735,12 +754,49 @@ test.describe('Content Reading Flow', () => {
 
 ### 9. DevOps & Infrastructure
 
+**Local Development (Current Priority):**
+
+All infrastructure runs locally via Docker Compose for feature development:
+
+```yaml
+# docker-compose.yml - Primary development environment
+services:
+  - PostgreSQL 16 (primary database)
+  - MongoDB 7 (document storage)
+  - Redis 7 (caching, sessions)
+  - Meilisearch (search engine)
+  - ClickHouse 24 (analytics)
+  - Kafka + Zookeeper (event streaming)
+  - MinIO (S3-compatible storage)
+  - Mailhog (email testing)
+```
+
+**Code should be written to work with Docker Compose first**, then be cloud-ready:
+
+```typescript
+// ✅ Good: Environment-aware configuration
+const databaseConfig = {
+  host: process.env.POSTGRES_HOST || 'localhost',
+  port: parseInt(process.env.POSTGRES_PORT || '5432'),
+  database: process.env.POSTGRES_DB || 'knowledge_hub_dev',
+};
+
+// ✅ Good: S3-compatible (works with MinIO and AWS S3)
+const storageConfig = {
+  endpoint: process.env.S3_ENDPOINT || 'http://localhost:9000',
+  accessKeyId: process.env.S3_ACCESS_KEY,
+  secretAccessKey: process.env.S3_SECRET_KEY,
+  bucket: process.env.S3_BUCKET || 'knowledge-hub',
+};
+```
+
 **Docker:**
 
 - Use multi-stage builds
 - Minimize image size (Alpine base)
 - Use .dockerignore
 - Don't run as root
+- Ensure containers work in both Docker Compose and Kubernetes
 
 ```dockerfile
 # Multi-stage build example
@@ -777,8 +833,11 @@ CMD ["node", "dist/main.js"]
 - Use ConfigMaps for configuration
 - Use Secrets for sensitive data
 
+**Note**: Kubernetes deployment planned for Phase 3+ when transitioning to AWS. Current focus is
+Docker Compose.
+
 ```yaml
-# Kubernetes deployment example
+# Kubernetes deployment example (future use)
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -838,8 +897,11 @@ spec:
 - Use variables for environment-specific values
 - Apply proper tagging
 
+**Note**: Terraform infrastructure prepared in Phase 0.4 but deployment planned for Phase 3+ when
+features are complete and tested locally.
+
 ```hcl
-# Terraform module example
+# Terraform module example (ready for future deployment)
 module "vpc" {
   source = "./modules/vpc"
 
