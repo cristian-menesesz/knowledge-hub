@@ -2064,8 +2064,29 @@ dependencies, and parallel workstreams.
 ### Roadmap Overview
 
 **Total Duration**: ~12-18 months (with a team of 5-8 developers)  
-**Phases**: 6 major phases from infrastructure to production  
-**Milestone Releases**: MVP → Alpha → Beta → V1.0 → V1.5 → V2.0
+**Phases**: 15 phases from infrastructure to production launch  
+**Milestone Releases**: MVP → Alpha → Beta → V1.0
+
+### Git Workflow & Release Strategy
+
+**Branch Strategy:**
+
+- **Feature → Develop**: SQUASH merge (one clean commit per feature in develop)
+- **Develop → Main**: MERGE commit via release branch (preserves detailed history in main)
+- **Main**: Tagged releases only, detailed audit trail for production
+
+**Merge to Main Criteria (Release Versions):**
+
+- **v0.1.0** - Phase 0 complete (Foundation & Setup) ✅ **RELEASED**
+- **v0.2.0** - Phase 2 complete (MVP CMS - Content Service operational)
+- **v0.3.0** - Phase 3 complete (Search & Enhanced Reading)
+- **v0.4.0** - Phase 4 complete (Comments & Real-Time - Alpha Release)
+- **v0.5.0** - Phase 5 complete (Admin Dashboard & Analytics)
+- **v0.6.0** - Phase 6 complete (GraphQL & Advanced Features)
+- **v0.7.0** - Phase 7 complete (Kubernetes Deployment - Beta Release)
+- **v1.0.0** - Phase 15 complete (Production Launch)
+
+**Hotfix Releases:** v0.x.1, v0.x.2 (critical production bugs only)
 
 ---
 

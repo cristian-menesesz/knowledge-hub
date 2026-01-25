@@ -124,12 +124,16 @@ git checkout -b release/1.0.0
 # Update version numbers, changelog, etc.
 npm version 1.0.0
 git add .
-git commit -m "chore(release): prepare v1.0.0"
+git commit -m "chore(infra): prepare v1.0.0"
 
-# Create PR to main
+# Create PR to main (DO NOT SQUASH)
 git push -u origin release/1.0.0
+gh pr create --base main --title "Release v1.0.0: Production Launch" --fill
 
-# After approval and merge to main
+# After approval, merge to main with MERGE COMMIT (preserve history)
+gh pr merge --merge --delete-branch
+
+# After merge to main, tag it
 git checkout main
 git pull origin main
 git tag -a v1.0.0 -m "Release version 1.0.0"
@@ -137,9 +141,59 @@ git push origin v1.0.0
 
 # Merge back to develop
 git checkout develop
-git merge release/1.0.0
+git merge main
 git push origin develop
 ```
+
+## Merge Strategy
+
+### Feature Branch → Develop: SQUASH MERGE
+
+**Why:** Keep develop history clean with one commit per feature
+
+```bash
+# When merging PR
+gh pr merge --squash
+```
+
+**Result in develop:**
+
+```
+feat(content-editor): Add block-based editor (squashed 5 commits)
+```
+
+### Develop → Main (via Release): MERGE COMMIT
+
+**Why:** Preserve detailed history for production audit trail
+
+```bash
+# When merging release PR
+gh pr merge --merge
+```
+
+**Result in main:**
+
+- All squashed feature commits from develop are preserved
+- Can use `git bisect` to find exact commit that introduced issues
+- Can cherry-pick specific features to hotfix branches
+- Full audit trail for compliance/debugging
+
+### When to Create Release (Merge to Main)
+
+Based on DEVELOPMENT_CHECKLIST.md phase completion:
+
+| Version       | Phase    | Description                           |
+| ------------- | -------- | ------------------------------------- |
+| **v0.1.0** ✅ | Phase 0  | Foundation & Setup (RELEASED)         |
+| **v0.2.0**    | Phase 2  | MVP CMS - Content Service operational |
+| **v0.3.0**    | Phase 3  | Search & Enhanced Reading             |
+| **v0.4.0**    | Phase 4  | Comments & Real-Time (Alpha Release)  |
+| **v0.5.0**    | Phase 5  | Admin Dashboard & Analytics           |
+| **v0.6.0**    | Phase 6  | GraphQL & Advanced Features           |
+| **v0.7.0**    | Phase 7  | Kubernetes Deployment (Beta Release)  |
+| **v1.0.0**    | Phase 15 | Production Launch                     |
+
+**Hotfix releases:** v0.x.1, v0.x.2 (critical bugs only)
 
 ## Commit Message Convention
 
