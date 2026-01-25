@@ -1254,3 +1254,128 @@ export class ContentFactory {
 5. **Write self-documenting code with clear naming**
 6. **Add comments for complex business logic only**
 7. **Follow established patterns in the codebase**
+
+---
+
+## 📝 Git & Version Control
+
+### Branching Strategy
+
+**Main Branches:**
+
+- `main` - Production-ready code (protected, requires PR)
+- `develop` - Integration branch (protected, requires PR)
+
+**Supporting Branches:**
+
+- `feature/*` - Feature development (branch from develop)
+  - Format: `feature/task-id-description`
+  - Example: `feature/cms-001-block-editor`
+- `bugfix/*` - Bug fixes (branch from develop)
+  - Format: `bugfix/issue-id-description`
+- `hotfix/*` - Urgent production fixes (branch from main)
+  - Format: `hotfix/version-description`
+- `release/*` - Release preparation (branch from develop)
+  - Format: `release/version`
+
+### Commit Messages (Conventional Commits)
+
+**Format:** `type(scope): description`
+
+**Types:**
+
+- `feat` - New feature
+- `fix` - Bug fix
+- `docs` - Documentation only
+- `style` - Code style (formatting)
+- `refactor` - Code refactoring
+- `perf` - Performance improvements
+- `test` - Adding/updating tests
+- `build` - Build system or dependencies
+- `ci` - CI configuration
+- `chore` - Other changes (maintenance)
+
+**Scopes:**
+
+- `content-service`, `auth-service`, `comment-service`, `media-service`
+- `search-service`, `analytics-service`, `gateway`
+- `shell`, `content-reader`, `content-editor`, `admin-dashboard`
+- `search-mfe`, `discussion-mfe`, `playground-mfe`
+- `design-system`, `deps`, `config`, `infra`, `docs`, `ci`
+
+**Examples:**
+
+```bash
+feat(content-service): Add full-text search capability
+fix(auth): Resolve token refresh race condition
+docs(readme): Update deployment instructions
+test(comments): Add E2E tests for threading
+refactor(cache): Extract Redis logic to separate service
+perf(content-reader): Optimize image loading
+ci(github-actions): Add security scanning workflow
+```
+
+**Breaking Changes:**
+
+```bash
+feat(api)!: Change content API response format
+
+BREAKING CHANGE: The content API now returns `publishedAt` instead of `published_at`
+```
+
+### Pull Request Workflow
+
+**Branch Protection Active:**
+
+- Cannot push directly to `main` or `develop`
+- Must create Pull Request for all changes
+- PR workflow required even as solo developer
+
+**Creating Feature:**
+
+```bash
+# Start from develop
+git checkout develop
+git pull origin develop
+
+# Create feature branch
+git checkout -b feature/cms-001-block-editor
+
+# Make changes, commit with conventional commits
+git add .
+git commit -m "feat(content-editor): Add block registry system"
+
+# Push and create PR
+git push -u origin feature/cms-001-block-editor
+gh pr create --fill  # or use web interface
+```
+
+**Merging:**
+
+```bash
+# Self-review changes in PR
+# Ensure all checks pass
+# Merge via CLI or web interface
+gh pr merge --squash
+
+# Clean up
+git checkout develop
+git pull
+git branch -d feature/cms-001-block-editor
+```
+
+### Why PR Workflow?
+
+1. **Self-Review**: Catch issues before merging
+2. **Clear History**: Organized, documented changes
+3. **CI/CD**: Automated tests on every change
+4. **Professional**: Industry-standard workflow
+5. **Scalable**: Easy to add collaborators later
+
+### Git Hooks Active
+
+- **Pre-commit**: Formatting + linting
+- **Pre-push**: Type checking + unit tests
+- **Commit-msg**: Conventional commit validation
+
+See [GIT_WORKFLOW.md](../docs/GIT_WORKFLOW.md) for complete details

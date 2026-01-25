@@ -73,10 +73,20 @@ git push -u origin feature/cms-001-block-editor
    - Related task IDs (CMS-001, etc.)
    - Screenshots (if UI changes)
    - Testing checklist
-4. Request reviews from team members
-5. Ensure all CI checks pass
-6. Address review comments
-7. Squash and merge once approved
+4. Self-review your changes (review diff, check for issues)
+5. Ensure all CI checks pass (when configured)
+6. Address any issues or improvements identified
+7. Merge when ready (squash and merge recommended)
+
+**Solo Developer PR Creation:**
+
+```bash
+# After pushing your feature branch
+gh pr create --base develop --title "feat(scope): Your feature" --body "Description"
+
+# Or use the web interface
+gh pr view --web
+```
 
 ### Hotfix Process
 
@@ -206,8 +216,7 @@ BREAKING CHANGE: The content API now returns `publishedAt` instead of `published
 ### Main Branch
 
 - ✅ Require pull request before merging
-- ✅ Require 2 approvals
-- ✅ Require status checks to pass
+- ✅ Require status checks to pass (when CI is configured)
   - Linting
   - Type checking
   - Unit tests
@@ -216,19 +225,32 @@ BREAKING CHANGE: The content API now returns `publishedAt` instead of `published
   - Build verification
 - ✅ Require branches to be up to date
 - ✅ Require conversation resolution
-- ✅ Require signed commits (optional)
-- ✅ Include administrators
+- ✅ Prevent force pushes
+- ✅ Prevent branch deletion
+- ⚠️ No approval requirement (solo developer mode)
 
 ### Develop Branch
 
 - ✅ Require pull request before merging
-- ✅ Require 1 approval
-- ✅ Require status checks to pass
+- ✅ Require status checks to pass (when CI is configured)
   - Linting
   - Type checking
   - Unit tests
   - Build verification
 - ✅ Require branches to be up to date
+- ✅ Require conversation resolution
+- ✅ Prevent force pushes
+- ✅ Prevent branch deletion
+- ⚠️ No approval requirement (solo developer mode)
+
+### Solo Developer Mode
+
+This repository is configured for solo developer workflow:
+
+- **No approval requirements** - You can approve and merge your own PRs
+- **PR workflow still required** - Cannot push directly to main/develop
+- **Benefits**: Self-review process, clear change history, CI/CD integration
+- **When to add approvals**: When team grows, update branch protection to require approvals
 
 ## Pull Request Template
 
@@ -346,18 +368,48 @@ When conflicts occur:
 We follow [Semantic Versioning](https://semver.org/): `MAJOR.MINOR.PATCH`
 
 - **MAJOR**: Breaking changes
-- **MINOR**: New features (backward compatible)
-- **PATCH**: Bug fixes (backward compatible)
+- \*Solo Developer Tips
 
-Examples:
+### Quick PR Workflow
 
-- `1.0.0` → `1.0.1` (bug fix)
-- `1.0.1` → `1.1.0` (new feature)
-- `1.1.0` → `2.0.0` (breaking change)
+```bash
+# Create feature, make changes, commit
+git checkout -b feature/my-feature
+git add .
+git commit -m "feat(scope): Add feature"
+git push -u origin feature/my-feature
+
+# Create PR via CLI
+gh pr create --fill
+
+# View PR in browser
+gh pr view --web
+
+# Merge when ready
+gh pr merge --squash
+```
+
+### Why Use PRs as Solo Developer?
+
+1. **Self-Review**: Catch mistakes before merging
+2. **Clear History**: Each PR is a logical unit of work
+3. **CI/CD Integration**: Automated tests run on every PR
+4. **Documentation**: PRs serve as change documentation
+5. **Future-Proof**: Easy to add collaborators later
+6. **Portfolio**: Shows professional workflow to potential employers/collaborators
 
 ## Questions?
 
 If you have questions about the workflow, please:
+
+1. Check this document
+2. Review closed PRs for examples
+3. Ask in team chat
+4. Create a discussion in GitHub
+
+---
+
+**Last Updated**: January 25the workflow, please:
 
 1. Check this document
 2. Review closed PRs for examples
