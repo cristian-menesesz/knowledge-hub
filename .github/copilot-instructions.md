@@ -1254,3 +1254,245 @@ export class ContentFactory {
 5. **Write self-documenting code with clear naming**
 6. **Add comments for complex business logic only**
 7. **Follow established patterns in the codebase**
+
+---
+
+## 📝 Git & Version Control Strategy
+
+### Overview: Git Flow (Feature-Based Development)
+
+This project uses **Git Flow** with feature-based branching. **NEVER commit directly to main or
+develop**. All work happens in feature branches that are merged via Pull Requests.
+
+### Branch Types & Purposes
+
+**Long-Lived Branches:**
+
+1. **`main`** - Production releases only
+   - Contains only stable, released code
+   - Tagged with versions (v1.0.0, v1.1.0, etc.)
+   - Deployed to production
+   - Protected: Requires PR, no direct commits
+   - Updated only via release branches or hotfixes
+
+2. **`develop`** - Integration branch
+   - Integration point for all features
+   - Always ahead of main (accumulates features)
+   - Deployed to staging/testing
+   - Protected: Requires PR, no direct commits
+   - Never commit directly here!
+
+**Short-Lived Branches (Deleted after merge):**
+
+3. **`feature/*`** - New features (90% of your work)
+   - Branch from: `develop`
+   - Merge back to: `develop` (via PR)
+   - Naming: `feature/task-id-description`
+   - Examples:
+     - `feature/phase-0.2-ci-pipeline`
+     - `feature/cms-001-block-editor`
+     - `feature/auth-jwt-implementation`
+   - **Use for:** Every task from DEVELOPMENT_CHECKLIST.md
+
+4. **`bugfix/*`** - Bug fixes during development
+   - Branch from: `develop`
+   - Merge back to: `develop` (via PR)
+   - Naming: `bugfix/issue-id-description`
+   - Examples: `bugfix/123-fix-login-validation`
+   - **Use for:** Bugs found in develop/staging
+
+5. **`hotfix/*`** - Emergency production fixes
+   - Branch from: `main`
+   - Merge to: `main` AND `develop` (via PR)
+   - Naming: `hotfix/version-description`
+   - Examples: `hotfix/1.0.1-security-patch`
+   - **Use for:** Critical bugs in production
+
+6. **`release/*`** - Release preparation
+   - Branch from: `develop`
+   - Merge to: `main` AND `develop`
+   - Naming: `release/version`
+   - Examples: `release/1.0.0`, `release/0.2.0`
+   - **Use for:** Final testing, version bumps, changelog
+
+### The Correct Workflow (Feature-Based)
+
+**For Every Task/Feature:**
+
+```bash
+# 1. Start from latest develop
+git checkout develop
+git pull origin develop
+
+# 2. Create feature branch (use task ID from checklist)
+git checkout -b feature/phase-0.2-ci-pipeline
+
+# 3. Work on feature - make multiple commits
+git add .
+git commit -m "feat(ci): Add GitHub Actions workflow"
+git add .
+git commit -m "feat(ci): Add lint and test jobs"
+git add .
+git commit -m "feat(ci): Add build verification"
+
+# 4. Push feature branch
+git push -u origin feature/phase-0.2-ci-pipeline
+
+# 5. Create Pull Request (develop ← feature branch)
+gh pr create --base develop --fill
+
+# 6. Review your changes in PR
+gh pr view --web
+
+# 7. Merge when ready (squash recommended for clean history)
+gh pr merge --squash
+
+# 8. Clean up
+git checkout develop
+git pull
+git branch -d feature/phase-0.2-ci-pipeline
+```
+
+**For Releases (Syncing main with develop):**
+
+```bash
+# When ready to release (e.g., Phase 0 complete)
+git checkout develop
+git pull origin develop
+git checkout -b release/0.1.0
+
+# Update version in package.json
+npm version 0.1.0
+
+# Commit version bump
+git add .
+git commit -m "chore(release): Bump version to 0.1.0"
+
+# Create PR to main
+git push -u origin release/0.1.0
+gh pr create --base main --title "Release 0.1.0" --fill
+
+# After PR merged to main, tag it
+git checkout main
+git pull
+git tag -a v0.1.0 -m "Release 0.1.0: Foundation & Setup Complete"
+git push origin v0.1.0
+
+# Merge back to develop
+git checkout develop
+git merge main
+git push
+```
+
+### Why Feature Branches? (Not Direct Commits)
+
+**❌ Without Feature Branches (What we did initially):**
+
+```
+develop: commit → commit → commit → push
+Problem: No isolation, no review point, messy history
+```
+
+**✅ With Feature Branches (Correct approach):**
+
+```
+develop
+  ├─ feature/task-1 → PR → merge (squash)
+  ├─ feature/task-2 → PR → merge (squash)
+  └─ feature/task-3 → PR → merge (squash)
+```
+
+**Benefits:**
+
+1. **Isolation**: Features don't interfere with each other
+2. **Review Point**: PR forces you to review before merging
+3. **CI Testing**: Tests run on feature branch before merge
+4. **Clean History**: Squash merge = 1 commit per feature
+5. **Easy Rollback**: Can revert entire feature with 1 revert
+6. **Parallel Work**: Can work on multiple features (if needed)
+
+### Branch Relationship Diagram
+
+```
+main (v1.0.0)
+  ├──────────────────────────────── (stable releases)
+  ↑                                   ↑
+  │                                   │
+  │        release/1.0.0              │
+  │              ↑                    │
+  │              │                    │
+develop (integration)                 │
+  ├─ feature/phase-0.1 → merge ──────┘
+  ├─ feature/phase-0.2 → merge
+  ├─ feature/cms-001 → merge
+  └─ feature/cms-002 → (working...)
+```
+
+### Commit Messages (Conventional Commits)
+
+**Format:** `type(scope): description`
+
+**Types:**
+
+- `feat` - New feature
+- `fix` - Bug fix
+- `docs` - Documentation only
+- `style` - Code style (formatting)
+- `refactor` - Code refactoring
+- `perf` - Performance improvements
+- `test` - Adding/updating tests
+- `build` - Build system or dependencies
+- `ci` - CI configuration
+- `chore` - Other changes (maintenance)
+
+**Scopes:**
+
+- `content-service`, `auth-service`, `comment-service`, `media-service`
+- `search-service`, `analytics-service`, `gateway`
+- `shell`, `content-reader`, `content-editor`, `admin-dashboard`
+- `search-mfe`, `discussion-mfe`, `playground-mfe`
+- `design-system`, `deps`, `config`, `infra`, `docs`, `ci`
+
+**Examples:**
+
+```bash
+feat(content-service): Add full-text search capability
+fix(auth): Resolve token refresh race condition
+docs(readme): Update deployment instructions
+test(comments): Add E2E tests for threading
+refactor(cache): Extract Redis logic to separate service
+perf(content-reader): Optimize image loading
+ci(github-actions): Add security scanning workflow
+```
+
+**Breaking Changes:**
+
+```bash
+feat(api)!: Change content API response format
+
+BREAKING CHANGE: The content API now returns `publishedAt` instead of `published_at`
+```
+
+### Solo Developer Considerations
+
+**No Approval Required:**
+
+- Branch protection active but no approval needed
+- You can merge your own PRs
+- Still required to use PR workflow
+
+**Why Still Use PRs Solo?**
+
+1. **Self-Review**: See all changes in one view, catch mistakes
+2. **Clear History**: Each PR = one logical feature
+3. **CI/CD**: Tests run before merge
+4. **Professional**: Industry-standard workflow
+5. **Future-Proof**: Easy to add team members later
+
+### Git Hooks Active
+
+- **Pre-commit**: Formatting + linting
+- **Pre-push**: Type checking + unit tests
+- **Commit-msg**: Conventional commit validation
+
+See [GIT_WORKFLOW.md](../docs/GIT_WORKFLOW.md) for complete details
