@@ -1,0 +1,186 @@
+// This is your Prisma schema file for Content Service
+// Documentation: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Content {
+  id          String        @id @default(uuid())
+  
+  // Basic fields
+  title       String
+  slug        String        @unique
+  type        ContentType
+  status      ContentStatus @default(DRAFT)
+  
+  // Author reference (no FK - microservices pattern)
+  authorId    String
+  
+  // Content structure
+  body        String?       @db.Text // For simple markdown content
+  blockData   Json?         // For block editor (articles, tutorials)
+  
+  // SEO & Discovery
+  excerpt     String?       @db.Text
+  metaTitle   String?
+  metaDescription String?    @db.Text
+  
+  // Publishing
+  publishedAt DateTime?
+  scheduledAt DateTime?
+  archivedAt  DateTime?
+  
+  // Metadata
+  readingTime Int?          // Estimated reading time in minutes
+  featured    Boolean       @default(false)
+  viewCount   Int           @default(0)
+  
+  // Timestamps
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  
+  // Relations
+  versions    ContentVersion[]
+  tags        ContentTag[]
+  concepts    ContentConcept[]
+  links       ContentLink[]     @relation("SourceContent")
+  backlinks   ContentLink[]     @relation("TargetContent")
+  
+  @@index([authorId])
+  @@index([slug])
+  @@index([type])
+  @@index([status])
+  @@index([publishedAt])
+  @@index([featured])
+  @@map("content")
+}
+
+enum ContentType {
+  ARTICLE              // Long-form technical writing
+  EXPERIMENT           // Interactive code demonstrations
+  CODE_SNIPPET         // Standalone code examples
+  DEEP_DIVE            // Multi-part series
+  DEFINITION           // Glossary entry
+  ARCHITECTURE_DIAGRAM // System design diagram
+  PROJECT_LOG          // Development narrative
+  REFERENCE_GUIDE      // Quick-lookup reference
+  TUTORIAL             // Step-by-step guide
+}
+
+enum ContentStatus {
+  DRAFT       // Work in progress
+  PUBLISHED   // Live and visible
+  ARCHIVED    // Hidden but preserved
+  SCHEDULED   // Queued for future publish
+}
+
+// Version History - snapshot approach
+model ContentVersion {
+  id          String   @id @default(uuid())
+  contentId   String
+  version     Int      // Incremental version number
+  snapshot    Json     // Full content snapshot at this version
+  changeNote  String?  @db.Text // What changed in this version
+  createdAt   DateTime @default(now())
+  createdBy   String   // authorId who created this version
+  
+  content Content @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  
+  @@unique([contentId, version])
+  @@index([contentId])
+  @@index([createdAt])
+  @@map("content_versions")
+}
+
+// Tags - Cross-cutting concerns
+model Tag {
+  id       String       @id @default(uuid())
+  name     String       @unique
+  slug     String       @unique
+  color    String?      // Hex color for UI display
+  
+  contents ContentTag[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@index([slug])
+  @@map("tags")
+}
+
+model ContentTag {
+  contentId String
+  tagId     String
+  addedAt   DateTime @default(now())
+  
+  content Content @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  tag     Tag     @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  
+  @@id([contentId, tagId])
+  @@map("content_tags")
+}
+
+// Concepts - Domain taxonomy (hierarchical)
+model Concept {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  slug        String   @unique
+  description String?  @db.Text
+  parentId    String?  // For hierarchical concepts (e.g., "React" under "Frontend")
+  
+  // Self-referencing hierarchy
+  parent   Concept?         @relation("ConceptHierarchy", fields: [parentId], references: [id])
+  children Concept[]        @relation("ConceptHierarchy")
+  
+  contents ContentConcept[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@index([slug])
+  @@index([parentId])
+  @@map("concepts")
+}
+
+model ContentConcept {
+  contentId String
+  conceptId String
+  isPrimary Boolean  @default(false) // One primary concept per content
+  addedAt   DateTime @default(now())
+  
+  content Content @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  concept Concept @relation(fields: [conceptId], references: [id], onDelete: Cascade)
+  
+  @@id([contentId, conceptId])
+  @@map("content_concepts")
+}
+
+// Bidirectional Links - Wiki-style linking
+model ContentLink {
+  id          String   @id @default(uuid())
+  sourceId    String   // Content that contains the link
+  targetId    String   // Content being linked to
+  linkType    LinkType @default(RELATED)
+  context     String?  // Text surrounding the link (for preview)
+  createdAt   DateTime @default(now())
+  
+  source Content @relation("SourceContent", fields: [sourceId], references: [id], onDelete: Cascade)
+  target Content @relation("TargetContent", fields: [targetId], references: [id], onDelete: Cascade)
+  
+  @@unique([sourceId, targetId])
+  @@index([targetId]) // For querying backlinks efficiently
+  @@map("content_links")
+}
+
+enum LinkType {
+  RELATED       // General related content
+  PREREQUISITE  // Should read before this
+  CONTINUATION  // Part of a series
+  REFERENCE     // Citation or source
+}

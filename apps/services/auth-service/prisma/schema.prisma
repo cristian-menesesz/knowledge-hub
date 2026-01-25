@@ -1,0 +1,79 @@
+// This is your Prisma schema file for Auth Service
+// Documentation: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  username      String    @unique
+  passwordHash  String?   // Null for OAuth-only users
+  
+  // OAuth fields
+  oauthProvider String?   // 'github', 'google', null for local auth
+  oauthId       String?   // Provider's user ID
+  oauthData     Json?     // Additional profile data from provider
+  
+  // Authorization
+  role          UserRole  @default(READER)
+  
+  // Profile
+  displayName   String?
+  avatarUrl     String?
+  bio           String?
+  
+  // Account status
+  isActive      Boolean   @default(true)
+  isVerified    Boolean   @default(false)
+  
+  // Timestamps
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  lastLoginAt   DateTime?
+  
+  // Relations
+  sessions      Session[]
+  
+  @@unique([oauthProvider, oauthId])
+  @@index([email])
+  @@index([username])
+  @@index([oauthProvider, oauthId])
+  @@map("users")
+}
+
+enum UserRole {
+  ADMIN         // Full access to all features
+  CONTRIBUTOR   // Can create and edit content (future)
+  READER        // Read-only access
+}
+
+model Session {
+  id           String   @id @default(uuid())
+  userId       String
+  refreshToken String   @unique
+  
+  // Client information
+  userAgent    String?
+  ipAddress    String?
+  deviceInfo   Json?    // Additional device/browser info
+  
+  // Session management
+  expiresAt    DateTime
+  lastActiveAt DateTime @default(now())
+  createdAt    DateTime @default(now())
+  
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+  @@index([refreshToken])
+  @@index([expiresAt])
+  @@map("sessions")
+}
