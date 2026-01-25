@@ -1344,7 +1344,7 @@ gh pr create --base develop --fill
 # 6. Review your changes in PR
 gh pr view --web
 
-# 7. Merge when ready (squash recommended for clean history)
+# 7. Merge when ready (SQUASH for clean develop history)
 gh pr merge --squash
 
 # 8. Clean up
@@ -1356,7 +1356,7 @@ git branch -d feature/phase-0.2-ci-pipeline
 **For Releases (Syncing main with develop):**
 
 ```bash
-# When ready to release (e.g., Phase 0 complete)
+# When ready to release (e.g., Phase 0, Phase 2 MVP, Phase 4 Alpha complete)
 git checkout develop
 git pull origin develop
 git checkout -b release/0.1.0
@@ -1366,16 +1366,19 @@ npm version 0.1.0
 
 # Commit version bump
 git add .
-git commit -m "chore(release): Bump version to 0.1.0"
+git commit -m "chore(infra): Bump version to 0.1.0"
 
-# Create PR to main
+# Create PR to main (DO NOT SQUASH - preserve detailed history)
 git push -u origin release/0.1.0
-gh pr create --base main --title "Release 0.1.0" --fill
+gh pr create --base main --title "Release 0.1.0: Phase 0 Foundation Complete" --fill
+
+# Merge with MERGE COMMIT (not squash) to preserve all feature commits
+gh pr merge --merge --delete-branch
 
 # After PR merged to main, tag it
 git checkout main
 git pull
-git tag -a v0.1.0 -m "Release 0.1.0: Foundation & Setup Complete"
+git tag -a v0.1.0 -m "Release 0.1.0: Phase 0 Foundation & Setup Complete"
 git push origin v0.1.0
 
 # Merge back to develop
@@ -1396,10 +1399,14 @@ Problem: No isolation, no review point, messy history
 **✅ With Feature Branches (Correct approach):**
 
 ```
-develop
-  ├─ feature/task-1 → PR → merge (squash)
-  ├─ feature/task-2 → PR → merge (squash)
-  └─ feature/task-3 → PR → merge (squash)
+develop (clean feature history)
+  ├─ feature/task-1 → PR → squash merge → 1 commit
+  ├─ feature/task-2 → PR → squash merge → 1 commit
+  └─ feature/task-3 → PR → squash merge → 1 commit
+      ↓
+main (detailed commit history preserved)
+  ├─ All squashed commits from develop merged via release
+  └─ Tagged with version (v0.1.0, v0.2.0, etc.)
 ```
 
 **Benefits:**
@@ -1407,26 +1414,57 @@ develop
 1. **Isolation**: Features don't interfere with each other
 2. **Review Point**: PR forces you to review before merging
 3. **CI Testing**: Tests run on feature branch before merge
-4. **Clean History**: Squash merge = 1 commit per feature
-5. **Easy Rollback**: Can revert entire feature with 1 revert
-6. **Parallel Work**: Can work on multiple features (if needed)
+4. **Clean Develop**: Squash merge = 1 commit per feature in develop
+5. **Detailed Main**: Merge commits preserve full history for audit/bisect
+6. **Easy Rollback**: Can revert entire feature OR revert to previous version tag
+7. **Parallel Work**: Can work on multiple features (if needed)
+
+### Merge Strategy
+
+**Feature Branch → Develop: SQUASH MERGE**
+
+- Collapses all feature commits into one clean commit
+- Keeps develop history readable and organized
+- Each feature = one logical commit
+
+**Develop → Main (via Release): MERGE COMMIT (NO SQUASH)**
+
+- Preserves all squashed feature commits in main
+- Maintains detailed audit trail for production
+- Enables git bisect for debugging
+- Can cherry-pick specific features to hotfix branches
 
 ### Branch Relationship Diagram
 
 ```
-main (v1.0.0)
+main (v1.0.0) ← MERGE COMMIT (preserves history)
   ├──────────────────────────────── (stable releases)
   ↑                                   ↑
   │                                   │
   │        release/1.0.0              │
   │              ↑                    │
   │              │                    │
-develop (integration)                 │
-  ├─ feature/phase-0.1 → merge ──────┘
-  ├─ feature/phase-0.2 → merge
-  ├─ feature/cms-001 → merge
+develop (integration) ← SQUASH MERGE (clean history)
+  ├─ feature/phase-0.1 → squash
+  ├─ feature/phase-0.2 → squash
+  ├─ feature/cms-001 → squash
   └─ feature/cms-002 → (working...)
 ```
+
+### When to Merge Develop to Main (Release Criteria)
+
+**Based on DEVELOPMENT_CHECKLIST.md phases:**
+
+- **v0.1.0** - Phase 0 complete (Foundation & Setup)
+- **v0.2.0** - Phase 2 complete (MVP CMS - Content Service operational)
+- **v0.3.0** - Phase 3 complete (Search & Enhanced Reading)
+- **v0.4.0** - Phase 4 complete (Comments & Real-Time - Alpha Release)
+- **v0.5.0** - Phase 5 complete (Admin Dashboard & Analytics)
+- **v0.6.0** - Phase 6 complete (GraphQL & Advanced Features)
+- **v0.7.0** - Phase 7 complete (Kubernetes Deployment - Beta Release)
+- **v1.0.0** - Phase 15 complete (Production Launch)
+
+**Hotfix releases:** v0.x.1, v0.x.2 (critical bugs only)
 
 ### Commit Messages (Conventional Commits)
 
