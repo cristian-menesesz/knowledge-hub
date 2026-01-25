@@ -6,25 +6,29 @@
 
 - **`main`** - Production-ready code
   - Protected branch
-  - Requires pull request with approvals
-  - All tests must pass
+  - Requires pull request (no approvals for solo developer)
+  - All tests must pass (when CI configured)
   - Deploys to production
   - Tagged with semantic versions (v1.0.0, v1.1.0, etc.)
 
 - **`develop`** - Integration branch
   - Protected branch
-  - Requires pull request with approvals
-  - All tests must pass
+  - Requires pull request (no approvals for solo developer)
+  - All tests must pass (when CI configured)
   - Deploys to staging environment
-  - Always ahead of main
+  - Always ahead of main (accumulates features)
 
 ### Supporting Branches
 
-- **`feature/*`** - Feature development
+**IMPORTANT**: ALL work happens in feature branches. Never commit directly to `main` or `develop`.
+
+- **`feature/*`** - Feature development (90% of your work)
   - Branch from: `develop`
-  - Merge back to: `develop`
+  - Merge back to: `develop` (via PR)
   - Naming: `feature/task-id-short-description`
-  - Examples: `feature/cms-001-block-editor`, `feature/auth-oauth-integration`
+  - Examples: `feature/cms-001-block-editor`, `feature/auth-oauth-integration`,
+    `feature/phase-0.3-ci-pipeline`
+  - **Use for**: Every task from DEVELOPMENT_CHECKLIST.md
 
 - **`bugfix/*`** - Bug fixes during development
   - Branch from: `develop`
@@ -409,13 +413,5 @@ If you have questions about the workflow, please:
 
 ---
 
-**Last Updated**: January 25the workflow, please:
-
-1. Check this document
-2. Review closed PRs for examples
-3. Ask in team chat
-4. Create a discussion in GitHub
-
----
-
-**Last Updated**: January 23, 2026
+**Last Updated**: January 25, 2026  
+**Status**: Feature-based workflow active
