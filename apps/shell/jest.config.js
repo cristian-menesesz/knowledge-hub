@@ -11,13 +11,18 @@ module.exports = {
     '<rootDir>/src/**/*.{spec,test}.{ts,tsx}',
   ],
   moduleNameMapper: {
-    ...baseReactConfig.moduleNameMapper,
+    // Design system mapping (override base config)
+    '^@knowledge-hub/design-system$':
+      require.resolve('../../packages/design-system/src/index.ts'),
+    // Path aliases for shell
     '^@/(.*)$': '<rootDir>/src/$1',
     '^@components/(.*)$': '<rootDir>/src/components/$1',
     '^@layouts/(.*)$': '<rootDir>/src/layouts/$1',
     '^@pages/(.*)$': '<rootDir>/src/pages/$1',
     '^@routes/(.*)$': '<rootDir>/src/routes/$1',
+    // Asset mocks
     '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
+    '\\.(jpg|jpeg|png|gif|svg)$': '<rootDir>/../../__mocks__/fileMock.js',
   },
   coverageDirectory: '<rootDir>/coverage',
   collectCoverageFrom: [
@@ -35,4 +40,5 @@ module.exports = {
       statements: 70,
     },
   },
+  transformIgnorePatterns: ['node_modules/(?!(@knowledge-hub)/)'],
 };

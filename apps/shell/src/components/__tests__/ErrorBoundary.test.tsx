@@ -1,4 +1,4 @@
-import { render, screen, within } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ErrorBoundary } from '../ErrorBoundary';
 
@@ -10,13 +10,17 @@ const ThrowError = ({ message = 'Test error' }: { message?: string }) => {
 // Component that doesn't throw
 const NoError = () => <div>No error</div>;
 
-// Suppress console.error during tests
-beforeAll(() => {
-  jest.spyOn(console, 'error').mockImplementation(() => {});
+// Suppress console.error during tests (ErrorBoundary logs to console)
+const mockConsoleError = jest
+  .spyOn(console, 'error')
+  .mockImplementation(() => {});
+
+beforeEach(() => {
+  mockConsoleError.mockClear();
 });
 
 afterAll(() => {
-  (console.error as jest.Mock).mockRestore();
+  mockConsoleError.mockRestore();
 });
 
 describe('ErrorBoundary', () => {
@@ -42,14 +46,17 @@ describe('ErrorBoundary', () => {
     );
   });
 
-  it('should display error message', () => {
+  it('should display generic error message', () => {
     render(
       <ErrorBoundary>
         <ThrowError message="Custom error message" />
       </ErrorBoundary>
     );
 
-    expect(screen.getByText('Custom error message')).toBeInTheDocument();
+    // Component shows generic message, not the actual error message (unless in dev mode)
+    expect(
+      screen.getByText(/We apologize for the inconvenience/)
+    ).toBeInTheDocument();
   });
 
   it('should show Try Again button', () => {
@@ -81,17 +88,16 @@ describe('ErrorBoundary', () => {
       </ErrorBoundary>
     );
 
-    // Check for the alert icon (SVG)
-    const errorContainer = screen
+    // Check for the AlertTriangle icon (lucide-react renders SVG with specific class)
+    const svg = screen
       .getByRole('heading', { level: 1 })
-      .closest('div');
-    const svg = errorContainer?.querySelector('svg');
+      .parentElement?.parentElement?.querySelector('svg.lucide-alert-triangle');
     expect(svg).toBeInTheDocument();
   });
 
   it('should reset error on Try Again click', async () => {
     const user = userEvent.setup();
-    let shouldThrow = true;
+    const shouldThrow = true;
 
     const ConditionalError = () => {
       if (shouldThrow) {
@@ -100,7 +106,7 @@ describe('ErrorBoundary', () => {
       return <div>Success</div>;
     };
 
-    const { rerender } = render(
+    render(
       <ErrorBoundary>
         <ConditionalError />
       </ErrorBoundary>
@@ -111,26 +117,39 @@ describe('ErrorBoundary', () => {
       'Something went wrong'
     );
 
-    // Fix the error condition
-    shouldThrow = false;
-
-    // Click Try Again
+    // Click Try Again button
     const tryAgainButton = screen.getByRole('button', { name: /try again/i });
-    await user.click(tryAgainButton);
-
-    // Should render successfully after reset
-    // Note: In reality, resetErrorBoundary would trigger a rerender
-    // but for this test we're just checking the button exists and is clickable
     expect(tryAgainButton).toBeInTheDocument();
+
+    // Button should be clickable (testing that it exists and has onClick handler)
+    await user.click(tryAgainButton);
   });
 
-  it('should display error details section', () => {
+  it('should hide error details by default (production mode)', () => {
     render(
       <ErrorBoundary>
-        <ThrowError />
+        <ThrowError message="Custom error message" />
       </ErrorBoundary>
     );
 
-    expect(screen.getByText('Error details')).toBeInTheDocument();
+    // Error details should NOT be visible in test environment (no __DEV__ flag)
+    expect(screen.queryByText('Custom error message')).not.toBeInTheDocument();
+  });
+
+  it('should display error details when __DEV__ is set', () => {
+    // Simulate dev mode
+    (window as Window & { __DEV__?: boolean }).__DEV__ = true;
+
+    render(
+      <ErrorBoundary>
+        <ThrowError message="Custom error message" />
+      </ErrorBoundary>
+    );
+
+    // Error message should be visible in dev mode
+    expect(screen.getByText('Custom error message')).toBeInTheDocument();
+
+    // Clean up
+    delete (window as Window & { __DEV__?: boolean }).__DEV__;
   });
 });

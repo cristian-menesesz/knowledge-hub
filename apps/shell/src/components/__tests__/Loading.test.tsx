@@ -1,57 +1,51 @@
 import { render, screen } from '@testing-library/react';
-import { Loading } from '../Loading';
+import { LoadingSpinner } from '../Loading';
 
-describe('Loading', () => {
+describe('LoadingSpinner', () => {
   it('should render loading spinner by default', () => {
-    render(<Loading />);
+    render(<LoadingSpinner />);
 
     const loader = screen.getByRole('status');
     expect(loader).toBeInTheDocument();
     expect(loader).toHaveAttribute('aria-label', 'Loading');
   });
 
-  it('should render with custom message', () => {
-    render(<Loading message="Loading content..." />);
-
-    expect(screen.getByText('Loading content...')).toBeInTheDocument();
-  });
-
   it('should render with small size', () => {
-    render(<Loading size="small" />);
+    render(<LoadingSpinner size="sm" />);
 
     const loader = screen.getByRole('status');
-    const svg = loader.querySelector('svg');
-    expect(svg).toHaveClass('h-6', 'w-6');
+    expect(loader).toHaveClass('h-4', 'w-4');
   });
 
   it('should render with medium size (default)', () => {
-    render(<Loading />);
+    render(<LoadingSpinner />);
 
     const loader = screen.getByRole('status');
-    const svg = loader.querySelector('svg');
-    expect(svg).toHaveClass('h-8', 'w-8');
+    expect(loader).toHaveClass('h-8', 'w-8');
   });
 
   it('should render with large size', () => {
-    render(<Loading size="large" />);
+    render(<LoadingSpinner size="lg" />);
 
     const loader = screen.getByRole('status');
-    const svg = loader.querySelector('svg');
-    expect(svg).toHaveClass('h-12', 'w-12');
+    expect(loader).toHaveClass('h-12', 'w-12');
   });
 
   it('should have loading animation', () => {
-    render(<Loading />);
+    render(<LoadingSpinner />);
 
     const loader = screen.getByRole('status');
-    const svg = loader.querySelector('svg');
-    expect(svg).toHaveClass('animate-spin');
+    expect(loader).toHaveClass('animate-spin');
   });
 
-  it('should be centered by default', () => {
-    render(<Loading />);
+  it('should have rounded-full border style', () => {
+    render(<LoadingSpinner />);
 
-    const container = screen.getByRole('status').parentElement;
-    expect(container).toHaveClass('flex', 'items-center', 'justify-center');
+    const loader = screen.getByRole('status');
+    expect(loader).toHaveClass(
+      'rounded-full',
+      'border-primary',
+      'border-t-transparent'
+    );
   });
 });
