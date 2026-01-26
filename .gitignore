@@ -50,6 +50,9 @@ pnpm-debug.log*
 *.temp
 .cache/
 
+# TypeScript
+*.tsbuildinfo
+
 # Database
 *.sqlite
 *.db
