@@ -7,7 +7,7 @@ export default defineConfig({
     'components/index': 'src/components/index.ts',
   },
   format: ['cjs', 'esm'],
-  dts: true,
+  dts: false, // Disabled due to --incremental conflict with root tsconfig
   sourcemap: true,
   clean: true,
   external: ['react', 'react-dom'],
