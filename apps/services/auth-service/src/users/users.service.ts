@@ -38,15 +38,20 @@ export class UsersService {
       throw new ConflictException('User with this email already exists');
     }
 
-    // Check username uniqueness if provided
-    if (rest.username) {
-      const existingUsername = await this.prisma.user.findUnique({
-        where: { username: rest.username },
-      });
+    // Generate default username if not provided
+    const username = rest.username || email.split('@')[0];
 
-      if (existingUsername) {
-        throw new ConflictException('Username is already taken');
-      }
+    // Check username uniqueness
+    const existingUsername = await this.prisma.user.findUnique({
+      where: { username },
+    });
+
+    if (existingUsername) {
+      // Add random suffix if username is taken
+      const randomSuffix = Math.floor(Math.random() * 10000);
+      rest.username = `${username}${randomSuffix}`;
+    } else {
+      rest.username = username;
     }
 
     // Hash password if provided (for local auth)
@@ -58,6 +63,7 @@ export class UsersService {
     const user = await this.prisma.user.create({
       data: {
         email,
+        username: rest.username,
         passwordHash,
         ...rest,
       },

@@ -15,6 +15,7 @@ import {
   ApiResponse,
   ApiBearerAuth,
 } from '@nestjs/swagger';
+import type { User } from '@prisma/client';
 import type { Response } from 'express';
 
 import type { AuthService } from './auth.service';
@@ -100,7 +101,20 @@ export class AuthController {
   @Get('github/callback')
   @UseGuards(GithubAuthGuard)
   @ApiOperation({ summary: 'GitHub OAuth callback' })
-  async githubCallback(@Req() req: { user: User }, @Res() res: Response) {
+  async githubCallback(
+    @Req()
+    req: {
+      user: {
+        githubId: string;
+        email: string;
+        username?: string;
+        name?: string;
+        avatarUrl?: string;
+        provider: string;
+      };
+    },
+    @Res() res: Response
+  ) {
     const result = await this.authService.handleOAuthLogin(req.user);
 
     // Redirect to frontend with tokens
@@ -120,7 +134,19 @@ export class AuthController {
   @Get('google/callback')
   @UseGuards(GoogleAuthGuard)
   @ApiOperation({ summary: 'Google OAuth callback' })
-  async googleCallback(@Req() req: { user: User }, @Res() res: Response) {
+  async googleCallback(
+    @Req()
+    req: {
+      user: {
+        googleId: string;
+        email: string;
+        name?: string;
+        avatarUrl?: string;
+        provider: string;
+      };
+    },
+    @Res() res: Response
+  ) {
     const result = await this.authService.handleOAuthLogin(req.user);
 
     // Redirect to frontend with tokens

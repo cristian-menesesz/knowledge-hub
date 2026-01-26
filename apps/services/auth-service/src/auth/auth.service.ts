@@ -37,7 +37,8 @@ export class AuthService {
     const user = await this.usersService.create({
       email,
       password,
-      name,
+      displayName: name,
+      username: email.split('@')[0], // Generate username from email
     });
 
     this.logger.log(`User registered: ${user.email}`);
@@ -53,7 +54,7 @@ export class AuthService {
       user: {
         id: user.id,
         email: user.email,
-        name: user.name,
+        name: user.displayName,
         role: user.role,
       },
     };
@@ -76,7 +77,7 @@ export class AuthService {
       user: {
         id: user.id,
         email: user.email,
-        name: user.name,
+        name: user.displayName,
         role: user.role,
       },
     };
@@ -141,6 +142,8 @@ export class AuthService {
     name?: string;
     username?: string;
     avatarUrl?: string;
+    githubId?: string;
+    googleId?: string;
   }) {
     const { email, provider } = oauthUser;
 
@@ -148,31 +151,32 @@ export class AuthService {
 
     if (!user) {
       // Create new user from OAuth profile
-      user = await this.usersService.create({
+      await this.usersService.create({
         email: email,
-        name: oauthUser.name,
-        username: oauthUser.username,
+        displayName: oauthUser.name,
+        username: oauthUser.username || email.split('@')[0],
         avatarUrl: oauthUser.avatarUrl,
+        oauthProvider: provider,
+        oauthId: oauthUser.githubId || oauthUser.googleId || null,
         // No password for OAuth users
       });
 
-      // Store OAuth credentials
-      await this.prismaService.user.update({
-        where: { id: user.id },
-        data: {
-          [`${provider}Id`]: oauthUser[`${provider}Id`],
-        },
-      });
-
       this.logger.log(`New user created via ${provider}: ${email}`);
+
+      // Fetch the full user to ensure we have all fields
+      user = await this.usersService.findByEmail(email);
+      if (!user) {
+        throw new UnauthorizedException('Failed to create user');
+      }
     } else {
-      // Update OAuth ID if not set
-      const oauthIdField = `${provider}Id`;
-      if (!user[oauthIdField]) {
+      // Update OAuth info if not set
+      const oauthId = oauthUser.githubId || oauthUser.googleId;
+      if (oauthId && user.oauthId !== oauthId) {
         await this.prismaService.user.update({
           where: { id: user.id },
           data: {
-            [oauthIdField]: oauthUser[`${provider}Id`],
+            oauthProvider: provider,
+            oauthId: oauthId,
           },
         });
       }
@@ -194,7 +198,7 @@ export class AuthService {
       user: {
         id: user.id,
         email: user.email,
-        name: user.name,
+        name: user.displayName,
         role: user.role,
       },
     };

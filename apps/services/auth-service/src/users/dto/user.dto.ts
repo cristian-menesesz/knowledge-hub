@@ -22,6 +22,12 @@ export class CreateUserDto {
   @MaxLength(100)
   name?: string;
 
+  @ApiPropertyOptional({ example: 'John Doe' })
+  @IsOptional()
+  @IsString()
+  @MaxLength(100)
+  displayName?: string;
+
   @ApiPropertyOptional({ example: 'johndoe' })
   @IsOptional()
   @IsString()
@@ -51,6 +57,16 @@ export class CreateUserDto {
   @IsString()
   @MaxLength(500)
   bio?: string;
+
+  @ApiPropertyOptional({ example: 'github' })
+  @IsOptional()
+  @IsString()
+  oauthProvider?: string | null;
+
+  @ApiPropertyOptional({ example: '12345' })
+  @IsOptional()
+  @IsString()
+  oauthId?: string | null;
 }
 
 export class UpdateUserDto {
@@ -59,6 +75,12 @@ export class UpdateUserDto {
   @IsString()
   @MaxLength(100)
   name?: string;
+
+  @ApiPropertyOptional({ example: 'John Doe' })
+  @IsOptional()
+  @IsString()
+  @MaxLength(100)
+  displayName?: string;
 
   @ApiPropertyOptional({ example: 'johndoe' })
   @IsOptional()
