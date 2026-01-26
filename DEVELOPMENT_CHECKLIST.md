@@ -2159,12 +2159,12 @@ dependencies, and parallel workstreams.
 
 ### 1.3 Auth Service (Priority)
 
-- [ ] MS-AUTH-001: Service setup (NestJS)
-- [ ] MS-AUTH-002: User management (CRUD)
-- [ ] MS-AUTH-003: Local authentication
-- [ ] MS-AUTH-004: JWT management (access + refresh)
-- [ ] MS-AUTH-005: OAuth integration (GitHub, Google)
-- [ ] MS-AUTH-006: Redis session management
+- [x] MS-AUTH-001: Service setup (NestJS)
+- [x] MS-AUTH-002: User management (CRUD)
+- [x] MS-AUTH-003: Local authentication
+- [x] MS-AUTH-004: JWT management (access + refresh)
+- [x] MS-AUTH-005: OAuth integration (GitHub, Google)
+- [x] MS-AUTH-006: Redis session management
 
 ### 1.4 Design System Foundation
 
