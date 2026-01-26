@@ -2166,25 +2166,29 @@ dependencies, and parallel workstreams.
 - [x] MS-AUTH-005: OAuth integration (GitHub, Google)
 - [x] MS-AUTH-006: Redis session management
 
-### 1.4 Design System Foundation
+### 1.4 Design System Foundation ✅
 
-- [ ] DS-TOKEN-001: Figma token structure
-- [ ] DS-TOKEN-004: Token categories (colors, typography, spacing)
-- [ ] DS-TOKEN-005: Light/dark theme definitions
-- [ ] DS-TOKEN-006: CSS variables generation
-- [ ] DS-TOKEN-007: TypeScript definitions
-- [ ] DS-COMP-001: shadcn/ui + Radix UI setup
-- [ ] DS-COMP-002: Button components
-- [ ] DS-COMP-003: Input components
-- [ ] DS-COMP-009: Storybook setup and initial stories
-- [ ] DS-A11Y-001: Keyboard navigation patterns
-- [ ] DS-UX-001: Dark mode implementation
+- [x] DS-TOKEN-001: Token structure (code-first approach, not Figma)
+- [x] DS-TOKEN-004: Token categories (colors, typography, spacing, border-radius, shadows, z-index,
+      animation, breakpoints)
+- [x] DS-TOKEN-005: Light/dark theme definitions (CSS variables)
+- [x] DS-TOKEN-006: CSS variables generation (styles.css)
+- [x] DS-TOKEN-007: TypeScript definitions (all tokens exported with types)
+- [x] DS-COMP-001: Radix UI setup (15 primitives installed)
+- [x] DS-COMP-002: Button component (7 variants, 5 sizes, loading, icons)
+- [x] DS-COMP-003: Input component (label, validation, icons, helper text)
+- [x] DS-COMP-009: Storybook setup (v7.6 with a11y addon, 4 story files)
+- [x] DS-A11Y-001: Keyboard navigation patterns (built-in via Radix UI)
+- [x] DS-UX-001: Dark mode implementation (CSS variables, .dark class toggle)
 
 ### 1.5 Microfrontend Shell
 
-- [ ] MFE-SHELL-001: React + Webpack 5 project setup
-- [ ] MFE-SHELL-002: Main layout and routing
-- [ ] MFE-SHELL-004: Design system provider integration
+- [x] MFE-SHELL-001: React + Webpack 5 project setup (React 18, Webpack 5.90, Module Federation,
+      TypeScript 5.3, dev server on port 3000)
+- [x] MFE-SHELL-002: Main layout and routing (MainLayout with responsive nav, dark mode toggle,
+      React Router v6, HomePage, NotFoundPage, 5 routes configured)
+- [x] MFE-SHELL-004: Design system provider integration (ThemeProvider wraps app, Tailwind preset,
+      global styles, lucide-react icons, error boundaries, loading states)
 
 ### 1.6 Testing Foundation
 
