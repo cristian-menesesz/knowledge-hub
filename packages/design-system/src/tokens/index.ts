@@ -4,19 +4,45 @@
  * Central export for all design tokens
  */
 
-export { colors, type ColorToken } from './colors';
-export { typography, type TypographyToken } from './typography';
-export {
+import { colors, type ColorToken } from './colors';
+import { typography, type TypographyToken } from './typography';
+import {
   spacing,
   spacingPresets,
   type SpacingToken,
   type SpacingPreset,
 } from './spacing';
-export { borderRadius, type BorderRadiusToken } from './border-radius';
-export { shadows, type ShadowToken } from './shadows';
-export { zIndex, type ZIndexToken } from './z-index';
-export { animation, type AnimationToken } from './animation';
-export { breakpoints, type BreakpointToken } from './breakpoints';
+import { borderRadius, type BorderRadiusToken } from './border-radius';
+import { shadows, type ShadowToken } from './shadows';
+import { zIndex, type ZIndexToken } from './z-index';
+import { animation, type AnimationToken } from './animation';
+import { breakpoints, type BreakpointToken } from './breakpoints';
+
+// Re-export individual tokens
+export {
+  colors,
+  typography,
+  spacing,
+  spacingPresets,
+  borderRadius,
+  shadows,
+  zIndex,
+  animation,
+  breakpoints,
+};
+
+// Re-export types
+export type {
+  ColorToken,
+  TypographyToken,
+  SpacingToken,
+  SpacingPreset,
+  BorderRadiusToken,
+  ShadowToken,
+  ZIndexToken,
+  AnimationToken,
+  BreakpointToken,
+};
 
 // Combined tokens object
 export const tokens = {
