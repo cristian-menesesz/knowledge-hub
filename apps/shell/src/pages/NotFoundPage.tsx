@@ -1,8 +1,5 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck - Temporarily disabled due to missing design system type declarations
 import * as React from 'react';
 import { Link } from 'react-router-dom';
-// @ts-expect-error - Design system types not available without DTS build
 import { Button } from '@knowledge-hub/design-system';
 import { Home, Search } from 'lucide-react';
 
