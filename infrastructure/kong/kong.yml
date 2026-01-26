@@ -1,0 +1,285 @@
+# Kong Declarative Configuration
+# This file defines the initial API Gateway configuration
+
+_format_version: "3.0"
+_transform: true
+
+# Services - Backend microservices
+services:
+  - name: auth-service
+    url: http://host.docker.internal:3001
+    tags:
+      - auth
+      - microservice
+    routes:
+      - name: auth-routes
+        paths:
+          - /api/v1/auth
+        strip_path: false
+        methods:
+          - GET
+          - POST
+          - PUT
+          - PATCH
+          - DELETE
+    plugins:
+      - name: rate-limiting
+        config:
+          minute: 100
+          policy: local
+      - name: cors
+        config:
+          origins:
+            - http://localhost:3000
+            - http://localhost:8080
+          methods:
+            - GET
+            - POST
+            - PUT
+            - PATCH
+            - DELETE
+            - OPTIONS
+          headers:
+            - Accept
+            - Authorization
+            - Content-Type
+          exposed_headers:
+            - X-Auth-Token
+          credentials: true
+          max_age: 3600
+
+  - name: content-service
+    url: http://host.docker.internal:3002
+    tags:
+      - content
+      - microservice
+    routes:
+      - name: content-routes
+        paths:
+          - /api/v1/content
+        strip_path: false
+        methods:
+          - GET
+          - POST
+          - PUT
+          - PATCH
+          - DELETE
+    plugins:
+      - name: rate-limiting
+        config:
+          minute: 200
+          policy: local
+      - name: cors
+        config:
+          origins:
+            - http://localhost:3000
+            - http://localhost:8080
+          methods:
+            - GET
+            - POST
+            - PUT
+            - PATCH
+            - DELETE
+            - OPTIONS
+          headers:
+            - Accept
+            - Authorization
+            - Content-Type
+          credentials: true
+          max_age: 3600
+
+  - name: comment-service
+    url: http://host.docker.internal:3003
+    tags:
+      - comment
+      - microservice
+    routes:
+      - name: comment-routes
+        paths:
+          - /api/v1/comments
+        strip_path: false
+        methods:
+          - GET
+          - POST
+          - PUT
+          - PATCH
+          - DELETE
+    plugins:
+      - name: rate-limiting
+        config:
+          minute: 150
+          policy: local
+      - name: cors
+        config:
+          origins:
+            - http://localhost:3000
+            - http://localhost:8080
+          methods:
+            - GET
+            - POST
+            - PUT
+            - PATCH
+            - DELETE
+            - OPTIONS
+          headers:
+            - Accept
+            - Authorization
+            - Content-Type
+          credentials: true
+          max_age: 3600
+
+  - name: media-service
+    url: http://host.docker.internal:3004
+    tags:
+      - media
+      - microservice
+    routes:
+      - name: media-routes
+        paths:
+          - /api/v1/media
+        strip_path: false
+        methods:
+          - GET
+          - POST
+          - PUT
+          - DELETE
+    plugins:
+      - name: rate-limiting
+        config:
+          minute: 100
+          policy: local
+      - name: cors
+        config:
+          origins:
+            - http://localhost:3000
+            - http://localhost:8080
+          methods:
+            - GET
+            - POST
+            - PUT
+            - DELETE
+            - OPTIONS
+          headers:
+            - Accept
+            - Authorization
+            - Content-Type
+          credentials: true
+          max_age: 3600
+
+  - name: search-service
+    url: http://host.docker.internal:3005
+    tags:
+      - search
+      - microservice
+    routes:
+      - name: search-routes
+        paths:
+          - /api/v1/search
+        strip_path: false
+        methods:
+          - GET
+          - POST
+    plugins:
+      - name: rate-limiting
+        config:
+          minute: 300
+          policy: local
+      - name: cors
+        config:
+          origins:
+            - http://localhost:3000
+            - http://localhost:8080
+          methods:
+            - GET
+            - POST
+            - OPTIONS
+          headers:
+            - Accept
+            - Content-Type
+          credentials: true
+          max_age: 3600
+
+  - name: analytics-service
+    url: http://host.docker.internal:3006
+    tags:
+      - analytics
+      - microservice
+    routes:
+      - name: analytics-routes
+        paths:
+          - /api/v1/analytics
+        strip_path: false
+        methods:
+          - GET
+          - POST
+    plugins:
+      - name: rate-limiting
+        config:
+          minute: 50
+          policy: local
+      - name: cors
+        config:
+          origins:
+            - http://localhost:3000
+            - http://localhost:8080
+          methods:
+            - GET
+            - POST
+            - OPTIONS
+          headers:
+            - Accept
+            - Authorization
+            - Content-Type
+          credentials: true
+          max_age: 3600
+
+# Global Plugins
+plugins:
+  - name: request-id
+    config:
+      header_name: X-Request-ID
+      generator: uuid
+  - name: correlation-id
+    config:
+      header_name: X-Correlation-ID
+      generator: uuid
+      echo_downstream: true
+  - name: prometheus
+    config:
+      per_consumer: false
+
+# Upstreams - Load balancing configuration (for future horizontal scaling)
+upstreams:
+  - name: auth-upstream
+    algorithm: round-robin
+    hash_on: none
+    hash_fallback: none
+    healthchecks:
+      active:
+        healthy:
+          interval: 10
+          successes: 2
+        unhealthy:
+          interval: 10
+          tcp_failures: 2
+          http_failures: 3
+    targets:
+      - target: host.docker.internal:3001
+        weight: 100
+
+  - name: content-upstream
+    algorithm: round-robin
+    hash_on: none
+    hash_fallback: none
+    healthchecks:
+      active:
+        healthy:
+          interval: 10
+          successes: 2
+        unhealthy:
+          interval: 10
+          tcp_failures: 2
+          http_failures: 3
+    targets:
+      - target: host.docker.internal:3002
+        weight: 100

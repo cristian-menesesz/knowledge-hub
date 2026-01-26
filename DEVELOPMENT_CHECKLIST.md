@@ -2152,10 +2152,10 @@ dependencies, and parallel workstreams.
 
 ### 1.2 API Gateway & Service Mesh
 
-- [ ] MS-GATEWAY-001: Kong setup
-- [ ] MS-GATEWAY-002: Service registration placeholder
-- [ ] MS-GATEWAY-003: Basic routing configuration
-- [ ] MS-COMM-001: REST communication patterns
+- [x] MS-GATEWAY-001: Kong setup
+- [x] MS-GATEWAY-002: Service registration placeholder
+- [x] MS-GATEWAY-003: Basic routing configuration
+- [x] MS-COMM-001: REST communication patterns
 
 ### 1.3 Auth Service (Priority)
 
