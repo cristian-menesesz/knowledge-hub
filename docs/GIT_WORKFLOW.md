@@ -139,11 +139,10 @@ git pull origin main
 git tag -a v1.0.0 -m "Release version 1.0.0"
 git push origin v1.0.0
 
-# IMPORTANT: Merge back to develop (keeps develop in sync)
+# Merge back to develop
 git checkout develop
-git pull origin develop
-git merge main --no-edit
-git push origin develop origin develop
+git merge main
+git push origin develop
 ```
 
 ## Merge Strategy
