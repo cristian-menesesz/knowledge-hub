@@ -1,15 +1,24 @@
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+  Inject,
+  forwardRef,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Content, ContentStatus } from './entities/content.entity';
 import { CreateContentDto } from './dto/create-content.dto';
 import { UpdateContentDto } from './dto/update-content.dto';
+import { VersionService } from './version.service';
 
 @Injectable()
 export class ContentService {
   constructor(
     @InjectRepository(Content)
     private contentRepository: Repository<Content>,
+    @Inject(forwardRef(() => VersionService))
+    private versionService: VersionService,
   ) {}
 
   async create(createContentDto: CreateContentDto): Promise<Content> {
@@ -95,6 +104,12 @@ export class ContentService {
         throw new ConflictException(`Content with slug '${updateContentDto.slug}' already exists`);
       }
     }
+
+    // Create version snapshot before updating (automatic versioning)
+    await this.versionService.createVersion(
+      content,
+      updateContentDto.changeSummary || 'Content updated',
+    );
 
     Object.assign(content, updateContentDto);
     return await this.contentRepository.save(content);

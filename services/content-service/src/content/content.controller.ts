@@ -8,20 +8,30 @@ import {
   Delete,
   Query,
   ParseUUIDPipe,
+  ParseIntPipe,
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiQuery, ApiBearerAuth } from '@nestjs/swagger';
 import { ContentService } from './content.service';
+import { VersionService } from './version.service';
 import { CreateContentDto } from './dto/create-content.dto';
 import { UpdateContentDto } from './dto/update-content.dto';
 import { ContentResponseDto } from './dto/content-response.dto';
+import {
+  VersionResponseDto,
+  CompareVersionsResponseDto,
+  CreateVersionDto,
+} from './dto/version.dto';
 import { ContentStatus } from './entities/content.entity';
 
 @ApiTags('content')
 @Controller('contents')
 export class ContentController {
-  constructor(private readonly contentService: ContentService) {}
+  constructor(
+    private readonly contentService: ContentService,
+    private readonly versionService: VersionService,
+  ) {}
 
   @Post()
   @ApiOperation({ summary: 'Create new content' })
@@ -123,5 +133,71 @@ export class ContentController {
   async like(@Param('id', ParseUUIDPipe) id: string): Promise<{ success: boolean }> {
     await this.contentService.incrementLikeCount(id);
     return { success: true };
+  }
+
+  // Version Control Endpoints
+
+  @Get(':id/versions')
+  @ApiOperation({ summary: 'Get all versions of content' })
+  @ApiResponse({
+    status: 200,
+    description: 'List of content versions',
+    type: [VersionResponseDto],
+  })
+  @ApiResponse({ status: 404, description: 'Content not found' })
+  async getVersions(@Param('id', ParseUUIDPipe) id: string): Promise<VersionResponseDto[]> {
+    return await this.versionService.getVersionsByContentId(id);
+  }
+
+  @Get(':id/versions/:versionNumber')
+  @ApiOperation({ summary: 'Get specific version of content' })
+  @ApiResponse({ status: 200, description: 'Version found', type: VersionResponseDto })
+  @ApiResponse({ status: 404, description: 'Version not found' })
+  async getVersion(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Param('versionNumber', ParseIntPipe) versionNumber: number,
+  ): Promise<VersionResponseDto> {
+    return await this.versionService.getVersionByNumber(id, versionNumber);
+  }
+
+  @Post(':id/versions')
+  @ApiOperation({ summary: 'Create a manual version snapshot' })
+  @ApiResponse({ status: 201, description: 'Version created', type: VersionResponseDto })
+  @ApiResponse({ status: 404, description: 'Content not found' })
+  @ApiBearerAuth()
+  async createVersion(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() createVersionDto: CreateVersionDto,
+  ): Promise<VersionResponseDto> {
+    const content = await this.contentService.findOne(id);
+    return await this.versionService.createVersion(content, createVersionDto.changeSummary);
+  }
+
+  @Get(':id/versions/compare/:version1/:version2')
+  @ApiOperation({ summary: 'Compare two versions of content' })
+  @ApiResponse({
+    status: 200,
+    description: 'Version comparison',
+    type: CompareVersionsResponseDto,
+  })
+  @ApiResponse({ status: 404, description: 'Version not found' })
+  async compareVersions(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Param('version1', ParseIntPipe) version1: number,
+    @Param('version2', ParseIntPipe) version2: number,
+  ): Promise<CompareVersionsResponseDto> {
+    return await this.versionService.compareVersions(id, version1, version2);
+  }
+
+  @Post(':id/versions/:versionNumber/restore')
+  @ApiOperation({ summary: 'Restore content to a specific version' })
+  @ApiResponse({ status: 200, description: 'Content restored', type: ContentResponseDto })
+  @ApiResponse({ status: 404, description: 'Version not found' })
+  @ApiBearerAuth()
+  async restoreVersion(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Param('versionNumber', ParseIntPipe) versionNumber: number,
+  ): Promise<ContentResponseDto> {
+    return await this.versionService.restoreVersion(id, versionNumber);
   }
 }

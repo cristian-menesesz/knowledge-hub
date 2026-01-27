@@ -588,18 +588,23 @@
   - [x] Health check endpoints
   - **Status**: All components tested and verified. See `services/content-service/TESTING.md` for
     complete test results.
-- [ ] **MS-CONTENT-002**: Content CRUD operations
-  - [ ] Create content endpoint
-  - [ ] Read content by ID endpoint
-  - [ ] Update content endpoint
-  - [ ] Delete content endpoint (soft delete)
-  - [ ] List content with pagination
-- [ ] **MS-CONTENT-003**: Version control and history
-  - [ ] Version entity model
-  - [ ] Create version on content update
-  - [ ] List versions endpoint
-  - [ ] Compare versions endpoint
-  - [ ] Restore from version endpoint
+- [x] **MS-CONTENT-002**: Content CRUD operations ✅ (Completed Jan 27, 2026)
+  - [x] Create content endpoint
+  - [x] Read content by ID endpoint
+  - [x] Update content endpoint
+  - [x] Delete content endpoint (soft delete)
+  - [x] List content with pagination
+  - **Status**: All 9 CRUD endpoints implemented and tested. Includes slug-based lookup, publish,
+    and like functionality.
+- [x] **MS-CONTENT-003**: Version control and history ✅ (Completed Jan 27, 2026)
+  - [x] Version entity model
+  - [x] Create version on content update (automatic)
+  - [x] List versions endpoint
+  - [x] Compare versions endpoint
+  - [x] Restore from version endpoint
+  - **Status**: Full version control system implemented with automatic versioning on updates, manual
+    snapshot creation, version comparison with field-level diffs, and restore functionality. Added 5
+    new version endpoints.
 - [ ] **MS-CONTENT-004**: Rust content transformation microservice
   - [ ] Rust service setup with Actix-web
   - [ ] Markdown to HTML parser (pulldown-cmark)
