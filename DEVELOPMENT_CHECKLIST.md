@@ -2277,7 +2277,14 @@ validated
 
 ### 2.6 Draft/Publish Workflow
 
-- [ ] CMS-011: Draft management system
+- [x] CMS-011: Draft management system (2026-01-27)
+  - MongoDB-based draft storage with Mongoose
+  - Full CRUD operations with 13 REST endpoints
+  - Auto-save functionality for frequent content saves
+  - Preview URL system with crypto tokens
+  - Workflow status management (5 states: draft, in-review, scheduled, published, archived)
+  - Statistics and filtering capabilities
+  - Version tracking per draft
 - [ ] CMS-012: Publishing workflow (draft → published)
 - [ ] CMS-008: Auto-save implementation
 - [ ] CMS-009: Markdown import capability

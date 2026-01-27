@@ -4,6 +4,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { MongooseModule } from '@nestjs/mongoose';
 import { HealthModule } from './health/health.module';
 import { ContentModule } from './content/content.module';
+import { DraftModule } from './draft/draft.module';
+import { Content } from './content/entities/content.entity';
+import { ContentVersion } from './content/entities/content-version.entity';
 
 @Module({
   imports: [
@@ -24,7 +27,7 @@ import { ContentModule } from './content/content.module';
         username: configService.get('DATABASE_USER'),
         password: configService.get('DATABASE_PASSWORD'),
         database: configService.get('DATABASE_NAME'),
-        entities: [__dirname + '/**/*.entity{.ts,.js}'],
+        entities: [Content, ContentVersion],
         synchronize: configService.get('NODE_ENV') === 'development', // Only in dev!
         logging: configService.get('NODE_ENV') === 'development',
       }),
@@ -42,6 +45,7 @@ import { ContentModule } from './content/content.module';
     // Feature modules
     HealthModule,
     ContentModule,
+    DraftModule,
   ],
 })
 export class AppModule {}
