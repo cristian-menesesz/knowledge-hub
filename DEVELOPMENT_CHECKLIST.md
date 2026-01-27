@@ -580,12 +580,14 @@
 
 ### 6.1 Content Service (Node.js/NestJS + Rust)
 
-- [ ] **MS-CONTENT-001**: Core service setup
-  - [ ] NestJS project initialization
-  - [ ] Database connection (PostgreSQL + TypeORM)
-  - [ ] Environment configuration
-  - [ ] Logging setup (Winston)
-  - [ ] Health check endpoints
+- [x] **MS-CONTENT-001**: Core service setup ✅ (Completed Jan 27, 2026)
+  - [x] NestJS project initialization
+  - [x] Database connection (PostgreSQL + TypeORM)
+  - [x] Environment configuration
+  - [x] Logging setup (Winston)
+  - [x] Health check endpoints
+  - **Status**: All components tested and verified. See `services/content-service/TESTING.md` for
+    complete test results.
 - [ ] **MS-CONTENT-002**: Content CRUD operations
   - [ ] Create content endpoint
   - [ ] Read content by ID endpoint
