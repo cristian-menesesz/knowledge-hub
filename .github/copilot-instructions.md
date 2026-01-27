@@ -6,14 +6,62 @@ This is a **microservices-based knowledge management platform** with microfronte
 featuring content management, real-time discussions, interactive code playgrounds, and comprehensive
 analytics.
 
+## 🚨 DEPLOYMENT STRATEGY CHANGE (January 2026)
+
+**IMPORTANT**: The project has shifted from a full AWS cloud-native approach to a **simplified,
+budget-friendly deployment strategy**:
+
+### Current Deployment Architecture (Phase 2+)
+
+- **Compute**: Single **EC2 instance** (t3.micro for MVP, scalable to t3.small/medium)
+- **Storage**: **EBS volumes** for persistent data (30GB free tier, expandable to 50-100GB)
+- **Orchestration**: **Docker Compose** (NOT Kubernetes/ECS initially)
+- **Infrastructure as Code**: Docker Compose + shell scripts (Terraform deferred to Phase 7+)
+- **Cost Target**: $0-12/month for MVP (leveraging AWS Free Tier)
+
+### What This Means for Code Generation
+
+**DO:**
+
+- ✅ Design services to run via Docker Compose on single EC2
+- ✅ Use local EBS file system storage for media (NOT S3)
+- ✅ Optimize for vertical scaling (single machine resources)
+- ✅ Keep dependencies minimal and lightweight
+- ✅ Use Nginx for static file serving from EBS
+- ✅ Plan for easy migration to cloud services later (abstraction layers)
+
+**DON'T (for Phase 2-6):**
+
+- ❌ Reference S3, CloudFront, or CloudWatch in code
+- ❌ Design for Kubernetes/ECS (use Docker Compose)
+- ❌ Implement Lambda functions or managed services
+- ❌ Add AWS SDK dependencies unless absolutely necessary
+- ❌ Over-engineer for distributed systems initially
+
+### Migration Path (Future Phases)
+
+The architecture supports gradual cloud service adoption:
+
+- **Phase 7+**: Optional Kubernetes migration
+- **Phase 8+**: Optional S3 for media storage (via storage interface)
+- **Phase 10+**: Optional CloudFront CDN
+- **Phase 12+**: Optional managed services (RDS, ElastiCache)
+
+**Key Principle**: Build for simplicity now, design for scalability later through abstraction.
+
+---
+
 ## Core Technologies & Architecture
 
 ### Microservices Stack
 
-- **Content Service**: Node.js/NestJS + Rust (content transformation)
+- **Content Service**: Node.js/NestJS (content management, versioning)
 - **User/Auth Service**: Node.js/NestJS (OAuth, JWT)
 - **Comment/Discussion Service**: Node.js/NestJS + Rust WebSocket server
-- **Media/Asset Service**: Go (image optimization, CDN sync)
+- **Media/Asset Service**: Go (file upload, storage, basic optimization)
+  - **Storage**: EBS-backed file system (`/var/media/`)
+  - **Metadata**: PostgreSQL
+  - **Serving**: Nginx static files (NOT S3/CloudFront)
 - **Search Service**: Meilisearch
 - **Analytics Service**: Rust + ClickHouse
 - **API Gateway**: Kong
@@ -741,6 +789,7 @@ test.describe('Content Reading Flow', () => {
 - Minimize image size (Alpine base)
 - Use .dockerignore
 - Don't run as root
+- Design for Docker Compose orchestration (NOT Kubernetes initially)
 
 ```dockerfile
 # Multi-stage build example
@@ -769,7 +818,66 @@ ENV NODE_ENV=production
 CMD ["node", "dist/main.js"]
 ```
 
-**Kubernetes:**
+**Docker Compose (Primary Orchestration for Phase 2-6):**
+
+- Define all services in single docker-compose.yml
+- Use volumes for persistent data (EBS-backed)
+- Set resource limits appropriate for single EC2 instance
+- Use networks for service isolation
+- Configure health checks
+
+```yaml
+# docker-compose.yml example
+version: '3.8'
+
+services:
+  content-service:
+    build: ./services/content-service
+    ports:
+      - '3001:3001'
+    environment:
+      - DATABASE_URL=postgresql://user:pass@postgres:5432/content
+    volumes:
+      - content_data:/app/data
+    depends_on:
+      - postgres
+    networks:
+      - knowledge-hub
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+
+  media-service:
+    build: ./services/media-service
+    ports:
+      - '3004:3004'
+    volumes:
+      - media_storage:/var/media # EBS-backed persistent storage
+    environment:
+      - DATABASE_URL=postgresql://user:pass@postgres:5432/media
+    networks:
+      - knowledge-hub
+
+volumes:
+  media_storage:
+    driver: local
+  content_data:
+    driver: local
+
+networks:
+  knowledge_hub:
+    driver: bridge
+```
+
+**Kubernetes (Deferred to Phase 7+):**
+
+When migrating to Kubernetes later, maintain backward compatibility:
+
+**Kubernetes (Deferred to Phase 7+):**
+
+When migrating to Kubernetes later, maintain backward compatibility:
 
 - Define resource limits and requests
 - Use health checks (liveness, readiness)
@@ -778,7 +886,7 @@ CMD ["node", "dist/main.js"]
 - Use Secrets for sensitive data
 
 ```yaml
-# Kubernetes deployment example
+# Kubernetes deployment example (FOR FUTURE REFERENCE ONLY - Phase 7+)
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -831,15 +939,17 @@ spec:
             periodSeconds: 5
 ```
 
-**Terraform (IaC):**
+**Terraform (IaC - Deferred to Phase 7+):**
+
+For current phases (2-6), use Docker Compose + shell scripts. When scaling to production:
 
 - Use modules for reusability
-- Keep state remote (S3 + DynamoDB)
+- Keep state in version control initially (migrate to remote later)
 - Use variables for environment-specific values
 - Apply proper tagging
 
 ```hcl
-# Terraform module example
+# Terraform module example (FOR FUTURE REFERENCE ONLY - Phase 7+)
 module "vpc" {
   source = "./modules/vpc"
 
@@ -853,32 +963,22 @@ module "vpc" {
   }
 }
 
-module "eks_cluster" {
-  source = "./modules/eks"
+module "ec2_instance" {
+  source = "./modules/ec2"
 
-  cluster_name    = "knowledge-hub-${var.environment}"
-  vpc_id          = module.vpc.vpc_id
-  subnet_ids      = module.vpc.private_subnet_ids
-  cluster_version = "1.28"
+  instance_type = "t3.small"
+  ebs_volume_size = 50
 
-  node_groups = {
-    general = {
-      desired_size = 3
-      min_size     = 2
-      max_size     = 5
-      instance_types = ["t3.medium"]
-    }
+  tags = {
+    Project     = "knowledge-hub"
+    Environment = var.environment
   }
 }
 
-# Backend configuration
+# Simple local backend for now
 terraform {
-  backend "s3" {
-    bucket         = "knowledge-hub-terraform-state"
-    key            = "infrastructure/terraform.tfstate"
-    region         = "us-east-1"
-    dynamodb_table = "terraform-lock"
-    encrypt        = true
+  backend "local" {
+    path = "terraform.tfstate"
   }
 }
 ```

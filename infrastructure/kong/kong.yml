@@ -157,7 +157,11 @@ services:
       - name: rate-limiting
         config:
           minute: 100
+          hour: 1000
           policy: local
+      - name: request-size-limiting
+        config:
+          allowed_payload_size: 10
       - name: cors
         config:
           origins:
