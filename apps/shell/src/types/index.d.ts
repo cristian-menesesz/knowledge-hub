@@ -1,4 +1,5 @@
 // TypeScript declarations for static assets and Module Federation
+/// <reference types="@testing-library/jest-dom" />
 import type * as React from 'react';
 
 declare module '*.css' {

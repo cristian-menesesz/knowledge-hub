@@ -1,8 +1,5 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck - Temporarily disabled due to missing design system type declarations
 import * as React from 'react';
 import { ErrorBoundary as ReactErrorBoundary } from 'react-error-boundary';
-// @ts-expect-error - Design system types not available without DTS build
 import { Button } from '@knowledge-hub/design-system';
 import { AlertTriangle, Home, RefreshCw } from 'lucide-react';
 
@@ -33,16 +30,17 @@ const ErrorFallback: React.FC<ErrorFallbackProps> = ({
           </p>
         </div>
 
-        {process.env.NODE_ENV === 'development' && (
-          <div className="rounded-lg border border-error/20 bg-error/5 p-4 text-left">
-            <p className="font-mono text-sm text-error">{error.message}</p>
-            {error.stack && (
-              <pre className="mt-2 overflow-auto text-xs text-muted-foreground">
-                {error.stack}
-              </pre>
-            )}
-          </div>
-        )}
+        {typeof window !== 'undefined' &&
+          (window as Window & { __DEV__?: boolean }).__DEV__ && (
+            <div className="rounded-lg border border-error/20 bg-error/5 p-4 text-left">
+              <p className="font-mono text-sm text-error">{error.message}</p>
+              {error.stack && (
+                <pre className="mt-2 overflow-auto text-xs text-muted-foreground">
+                  {error.stack}
+                </pre>
+              )}
+            </div>
+          )}
 
         <div className="flex flex-col gap-2 sm:flex-row sm:justify-center">
           <Button
@@ -74,7 +72,11 @@ export const ErrorBoundary: React.FC<ErrorBoundaryProps> = ({ children }) => {
     console.error('Component stack:', info.componentStack);
 
     // In production, send to error tracking service
-    if (process.env.NODE_ENV === 'production') {
+    // Note: We skip error tracking in tests
+    if (
+      typeof window !== 'undefined' &&
+      !(window as Window & { __DEV__?: boolean }).__DEV__
+    ) {
       // TODO: Send to Sentry or similar service
       // Sentry.captureException(error, { extra: info });
     }
