@@ -2313,10 +2313,60 @@ validated
 
 ### 2.3 Content Types Implementation
 
-- [ ] CMS-017: Articles content type
-- [ ] CMS-019: Code Snippets content type
-- [ ] CMS-021: Definitions/Glossary
-- [ ] CMS-024: Reference Guides
+- [x] CMS-017: Articles content type (2026-01-27)
+  - Article entity with introduction, body (JSONB), conclusion
+  - Table of contents support with auto-generation capability
+  - Reading time and word count tracking
+  - Learning path integration (sequence numbers, series support)
+  - Key takeaways, prerequisites, related content linking
+  - External resources with type classification
+  - CreateArticleDto with full validation
+- [x] CMS-019: Code Snippets content type (2026-01-27)
+  - CodeSnippet entity with 19 programming language support
+  - Code storage with syntax highlighting metadata
+  - Framework and version tracking
+  - Execution context (output examples, dependencies, setup instructions)
+  - Playground integration flag (is_executable)
+  - Code quality metrics (lines of code, best practices, common pitfalls)
+  - Performance analysis (time/space complexity)
+  - Code variations and alternative approaches
+  - CreateCodeSnippetDto with comprehensive validation
+- [x] CMS-021: Definitions/Glossary (2026-01-27)
+  - Definition entity with 6 definition types (concept, term, acronym, API, pattern, principle)
+  - Core definition fields (term, definition, expanded explanation)
+  - Context and domain classification
+  - Acronym support (full form, abbreviations)
+  - Rich examples (contextual examples, code examples)
+  - Cross-referencing (synonyms, antonyms, related terms)
+  - Hierarchical relationships (parent/child concepts)
+  - Etymology and historical context
+  - Visual aids support (diagrams, illustrations)
+  - Pronunciation guide with audio support
+  - Full-text search index on term and definition
+  - CreateDefinitionDto with detailed validation
+- [x] CMS-024: Reference Guides (2026-01-27)
+  - Guide entity with 7 guide types and 5 format options
+  - Technology and version tracking
+  - Step-by-step instructions with code, output, and time estimates
+  - Prerequisites with type classification (knowledge, software, hardware, account)
+  - Learning outcomes and deliverables tracking
+  - Comprehensive reference sections (API, command, configuration)
+  - Troubleshooting support (common issues, FAQs)
+  - Version compatibility and verification tracking
+  - Migration guide support (from/to versions, breaking changes)
+  - Official documentation links
+  - CreateGuideDto with extensive validation
+
+**Technical Implementation**:
+
+- 4 new entity files extending base Content entity
+- 4 corresponding DTO files with class-validator decorators
+- Single migration file (002_create_content_types.sql) creating all tables
+- PostgreSQL JSONB columns for flexible nested data
+- Custom ENUM types for classification
+- Full-text search support for definitions
+- Index optimization for common query patterns
+- Content module updated with all new entities
 
 ### 2.4 Basic Block Editor (MVP)
 
