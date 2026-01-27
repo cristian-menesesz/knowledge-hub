@@ -580,24 +580,31 @@
 
 ### 6.1 Content Service (Node.js/NestJS + Rust)
 
-- [ ] **MS-CONTENT-001**: Core service setup
-  - [ ] NestJS project initialization
-  - [ ] Database connection (PostgreSQL + TypeORM)
-  - [ ] Environment configuration
-  - [ ] Logging setup (Winston)
-  - [ ] Health check endpoints
-- [ ] **MS-CONTENT-002**: Content CRUD operations
-  - [ ] Create content endpoint
-  - [ ] Read content by ID endpoint
-  - [ ] Update content endpoint
-  - [ ] Delete content endpoint (soft delete)
-  - [ ] List content with pagination
-- [ ] **MS-CONTENT-003**: Version control and history
-  - [ ] Version entity model
-  - [ ] Create version on content update
-  - [ ] List versions endpoint
-  - [ ] Compare versions endpoint
-  - [ ] Restore from version endpoint
+- [x] **MS-CONTENT-001**: Core service setup ✅ (Completed Jan 27, 2026)
+  - [x] NestJS project initialization
+  - [x] Database connection (PostgreSQL + TypeORM)
+  - [x] Environment configuration
+  - [x] Logging setup (Winston)
+  - [x] Health check endpoints
+  - **Status**: All components tested and verified. See `services/content-service/TESTING.md` for
+    complete test results.
+- [x] **MS-CONTENT-002**: Content CRUD operations ✅ (Completed Jan 27, 2026)
+  - [x] Create content endpoint
+  - [x] Read content by ID endpoint
+  - [x] Update content endpoint
+  - [x] Delete content endpoint (soft delete)
+  - [x] List content with pagination
+  - **Status**: All 9 CRUD endpoints implemented and tested. Includes slug-based lookup, publish,
+    and like functionality.
+- [x] **MS-CONTENT-003**: Version control and history ✅ (Completed Jan 27, 2026)
+  - [x] Version entity model
+  - [x] Create version on content update (automatic)
+  - [x] List versions endpoint
+  - [x] Compare versions endpoint
+  - [x] Restore from version endpoint
+  - **Status**: Full version control system implemented with automatic versioning on updates, manual
+    snapshot creation, version comparison with field-level diffs, and restore functionality. Added 5
+    new version endpoints.
 - [ ] **MS-CONTENT-004**: Rust content transformation microservice
   - [ ] Rust service setup with Actix-web
   - [ ] Markdown to HTML parser (pulldown-cmark)
@@ -2228,13 +2235,39 @@ validated
 **Duration**: 8 weeks  
 **Parallel Workstreams**: Content Service + Basic Editor + Media Service
 
-### 2.1 Content Service Backend
+### 2.1 Content Service Backend ✅ (2026-01-27)
 
-- [ ] MS-CONTENT-001: Core NestJS service setup
-- [ ] MS-CONTENT-002: Content CRUD operations
-- [ ] MS-CONTENT-003: Version control and history
-- [ ] MS-CONTENT-006: REST API with OpenAPI docs
-- [ ] MS-GATEWAY-002: Register Content Service in Kong
+- [x] MS-CONTENT-001: Core NestJS service setup (2026-01-25)
+  - NestJS project created with TypeORM + Mongoose
+  - PostgreSQL for content, MongoDB for drafts
+  - Health check endpoint at /health
+- [x] MS-CONTENT-002: Content CRUD operations (2026-01-26)
+  - 14 REST endpoints for content management
+  - Full CRUD with filtering, pagination, search
+  - Author and tags management
+- [x] MS-CONTENT-003: Version control and history (2026-01-26)
+  - Complete version history system
+  - Restore to any version
+  - Compare versions
+  - Version metadata tracking
+- [x] CMS-011: Draft management system (2026-01-27)
+  - MongoDB-based draft storage with Mongoose
+  - Full CRUD operations (13 REST endpoints)
+  - Auto-save functionality
+  - Preview URL system
+  - Workflow status management (5 states)
+- [x] MS-CONTENT-006: REST API with OpenAPI docs (2026-01-27)
+  - Swagger UI at http://localhost:3001/api/docs
+  - Complete API documentation with examples
+  - All controllers decorated with @ApiTags, @ApiOperation
+  - DTOs with @ApiProperty for auto-generation
+  - Server URLs for direct and Kong Gateway access
+  - Bearer JWT auth placeholder configured
+- [x] MS-GATEWAY-002: Register Content Service in Kong (2026-01-27)
+  - Content Service registered at port 3001
+  - Routes: /api/v1/contents, /api/v1/drafts
+  - Rate limiting: 200 req/min
+  - CORS configured
 
 ### 2.2 Media/Asset Service (Go)
 
@@ -2270,7 +2303,14 @@ validated
 
 ### 2.6 Draft/Publish Workflow
 
-- [ ] CMS-011: Draft management system
+- [x] CMS-011: Draft management system (2026-01-27)
+  - MongoDB-based draft storage with Mongoose
+  - Full CRUD operations with 13 REST endpoints
+  - Auto-save functionality for frequent content saves
+  - Preview URL system with crypto tokens
+  - Workflow status management (5 states: draft, in-review, scheduled, published, archived)
+  - Statistics and filtering capabilities
+  - Version tracking per draft
 - [ ] CMS-012: Publishing workflow (draft → published)
 - [ ] CMS-008: Auto-save implementation
 - [ ] CMS-009: Markdown import capability

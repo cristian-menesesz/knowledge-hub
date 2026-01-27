@@ -1,0 +1,86 @@
+version: '3.8'
+
+services:
+  # PostgreSQL - Primary database for structured content
+  postgres:
+    image: postgres:16-alpine
+    container_name: knowledge-hub-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: knowledge_hub
+      POSTGRES_USER: dev
+      POSTGRES_PASSWORD: dev_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ../postgres/init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dev -d knowledge_hub"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - knowledge-hub-network
+
+  # MongoDB - Flexible storage for drafts and dynamic content
+  mongodb:
+    image: mongo:7
+    container_name: knowledge-hub-mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: knowledge_hub
+    volumes:
+      - mongodb_data:/data/db
+      - ../mongodb/init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - knowledge-hub-network
+
+  # Redis - Caching and session management
+  redis:
+    image: redis:7-alpine
+    container_name: knowledge-hub-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - knowledge-hub-network
+    command: redis-server --appendonly yes
+
+  # ClickHouse - Analytics and time-series data (future)
+  # clickhouse:
+  #   image: clickhouse/clickhouse-server:23
+  #   container_name: knowledge-hub-clickhouse
+  #   ports:
+  #     - "8123:8123"
+  #     - "9000:9000"
+  #   volumes:
+  #     - clickhouse_data:/var/lib/clickhouse
+  #     - ../clickhouse/init:/docker-entrypoint-initdb.d
+  #   networks:
+  #     - knowledge-hub-network
+
+volumes:
+  postgres_data:
+    driver: local
+  mongodb_data:
+    driver: local
+  redis_data:
+    driver: local
+  # clickhouse_data:
+  #   driver: local
+
+networks:
+  knowledge-hub-network:
+    driver: bridge

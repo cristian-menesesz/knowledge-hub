@@ -1,7 +1,7 @@
 # Kong Declarative Configuration
 # This file defines the initial API Gateway configuration
 
-_format_version: "3.0"
+_format_version: '3.0'
 _transform: true
 
 # Services - Backend microservices
@@ -49,14 +49,24 @@ services:
           max_age: 3600
 
   - name: content-service
-    url: http://host.docker.internal:3002
+    url: http://host.docker.internal:3001
     tags:
       - content
       - microservice
     routes:
       - name: content-routes
         paths:
-          - /api/v1/content
+          - /api/v1/contents
+        strip_path: false
+        methods:
+          - GET
+          - POST
+          - PUT
+          - PATCH
+          - DELETE
+      - name: draft-routes
+        paths:
+          - /api/v1/drafts
         strip_path: false
         methods:
           - GET
