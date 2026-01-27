@@ -2269,14 +2269,47 @@ validated
   - Rate limiting: 200 req/min
   - CORS configured
 
-### 2.2 Media/Asset Service (Go)
+### 2.2 Media/Asset Service (Go) ✅ (2026-01-27)
 
-- [ ] MS-MEDIA-001: Go service setup
-- [ ] MS-MEDIA-002: File upload/storage to S3
-- [ ] MS-MEDIA-003: Basic image optimization
-- [ ] MS-MEDIA-006: gRPC API for content service
-- [ ] MEDIA-001: CloudFront CDN setup
-- [ ] MEDIA-005: Image upload with preview UI
+- [x] MS-MEDIA-001: Go service setup (2026-01-27)
+  - Go 1.21+ project with clean architecture
+  - HTTP REST API (port 3004)
+  - Modular structure (handler, service, repository, model)
+  - Health check endpoint at /health
+- [x] MS-MEDIA-002: File upload/storage to EBS (2026-01-27)
+  - Local file system storage (EBS-backed in production)
+  - UUID-based file naming
+  - Storage at /var/media/{originals,thumbnails,optimized,temp}
+  - PostgreSQL metadata storage
+  - File validation (type, size, dimensions)
+- [x] MS-MEDIA-003: Basic image validation (2026-01-27)
+  - Max file size: 10MB
+  - Allowed types: image/jpeg, image/png, image/gif, image/webp
+  - Max dimensions: 4000x4000px
+  - Automatic dimension extraction
+- [x] MS-MEDIA-004: REST API (deferred gRPC to Phase 6+) (2026-01-27)
+  - POST /api/v1/media/upload - File upload
+  - GET /api/v1/media/:id - Get file metadata
+  - GET /api/v1/media - List with pagination and filters
+  - DELETE /api/v1/media/:id - Soft delete
+- [x] MS-GATEWAY-003: Register Media Service in Kong (2026-01-27)
+  - Media Service registered at port 3004
+  - Routes: /api/v1/media
+  - Rate limiting: 100 req/min
+  - Request size limiting: 10MB
+  - CORS configured
+- [x] DEVOPS-DOCKER-003: Docker Compose media service (2026-01-27)
+  - Dockerfile with multi-stage build
+  - Health check configured
+  - Volume for persistent storage (media_storage)
+  - Environment variables configured
+
+**Deferred to Phase 3+**:
+
+- ⏳ MEDIA-001: CloudFront CDN setup (use Nginx static serving for now)
+- ⏳ MS-MEDIA-005: Image optimization (WebP conversion, thumbnails)
+- ⏳ MS-MEDIA-006: gRPC API (REST sufficient for Phase 2)
+- ⏳ MEDIA-005: Image upload with preview UI (backend ready, UI in Phase 2.4)
 
 ### 2.3 Content Types Implementation
 
