@@ -2235,13 +2235,33 @@ validated
 **Duration**: 8 weeks  
 **Parallel Workstreams**: Content Service + Basic Editor + Media Service
 
-### 2.1 Content Service Backend
+### 2.1 Content Service Backend ✅ (2026-01-27)
 
-- [ ] MS-CONTENT-001: Core NestJS service setup
-- [ ] MS-CONTENT-002: Content CRUD operations
-- [ ] MS-CONTENT-003: Version control and history
+- [x] MS-CONTENT-001: Core NestJS service setup (2026-01-25)
+  - NestJS project created with TypeORM + Mongoose
+  - PostgreSQL for content, MongoDB for drafts
+  - Health check endpoint at /health
+- [x] MS-CONTENT-002: Content CRUD operations (2026-01-26)
+  - 14 REST endpoints for content management
+  - Full CRUD with filtering, pagination, search
+  - Author and tags management
+- [x] MS-CONTENT-003: Version control and history (2026-01-26)
+  - Complete version history system
+  - Restore to any version
+  - Compare versions
+  - Version metadata tracking
+- [x] CMS-011: Draft management system (2026-01-27)
+  - MongoDB-based draft storage with Mongoose
+  - Full CRUD operations (13 REST endpoints)
+  - Auto-save functionality
+  - Preview URL system
+  - Workflow status management (5 states)
 - [ ] MS-CONTENT-006: REST API with OpenAPI docs
-- [ ] MS-GATEWAY-002: Register Content Service in Kong
+- [x] MS-GATEWAY-002: Register Content Service in Kong (2026-01-27)
+  - Content Service registered at port 3001
+  - Routes: /api/v1/contents, /api/v1/drafts
+  - Rate limiting: 200 req/min
+  - CORS configured
 
 ### 2.2 Media/Asset Service (Go)
 
