@@ -33,12 +33,44 @@ async function bootstrap() {
   // Swagger documentation
   const config = new DocumentBuilder()
     .setTitle('Content Service API')
-    .setDescription('Knowledge Hub - Content Management Service')
-    .setVersion('1.0')
-    .addTag('content', 'Content CRUD operations')
-    .addTag('draft', 'Draft management')
-    .addTag('version', 'Content versioning')
-    .addBearerAuth()
+    .setDescription(
+      `Knowledge Hub - Content Management Service
+      
+## Features
+- **Content Management**: Create, read, update, and delete content items
+- **Draft System**: Manage drafts with auto-save and preview capabilities
+- **Version Control**: Track content history and restore previous versions
+- **Advanced Filtering**: Search and filter by status, type, author, and more
+- **Rate Limiting**: 200 requests per minute via Kong Gateway
+
+## Architecture
+This service uses:
+- **PostgreSQL**: For content metadata and structured data
+- **MongoDB**: For draft storage and flexible content
+- **TypeORM & Mongoose**: For database access
+- **Kong Gateway**: For API gateway and rate limiting
+
+## Access Points
+- **Direct**: http://localhost:3001/api/v1 (development only)
+- **Via Kong**: http://localhost:8000/api/v1 (recommended, includes rate limiting and CORS)`,
+    )
+    .setVersion('1.0.0')
+    .setContact('Knowledge Hub Team', 'https://github.com/knowledge-hub', 'team@knowledge-hub.io')
+    .setLicense('MIT', 'https://opensource.org/licenses/MIT')
+    .addServer('http://localhost:3001/api/v1', 'Direct Service Access (Development)')
+    .addServer('http://localhost:8000/api/v1', 'Kong Gateway (Recommended)')
+    .addTag('content', 'Content CRUD operations, version control, and publishing')
+    .addTag('Drafts', 'Draft management with auto-save and preview')
+    .addTag('Health', 'Service health check endpoints')
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        description: 'Enter JWT token (will be implemented in auth-service)',
+      },
+      'JWT',
+    )
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

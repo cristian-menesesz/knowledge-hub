@@ -2256,7 +2256,13 @@ validated
   - Auto-save functionality
   - Preview URL system
   - Workflow status management (5 states)
-- [ ] MS-CONTENT-006: REST API with OpenAPI docs
+- [x] MS-CONTENT-006: REST API with OpenAPI docs (2026-01-27)
+  - Swagger UI at http://localhost:3001/api/docs
+  - Complete API documentation with examples
+  - All controllers decorated with @ApiTags, @ApiOperation
+  - DTOs with @ApiProperty for auto-generation
+  - Server URLs for direct and Kong Gateway access
+  - Bearer JWT auth placeholder configured
 - [x] MS-GATEWAY-002: Register Content Service in Kong (2026-01-27)
   - Content Service registered at port 3001
   - Routes: /api/v1/contents, /api/v1/drafts
