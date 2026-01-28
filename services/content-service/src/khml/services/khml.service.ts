@@ -75,7 +75,9 @@ export class KHMLService {
   extractPlainText(source: string): string {
     try {
       const document = this.parseToJSONB(source);
-      return this.extractTextFromBlocks(document.blocks);
+      return this.extractTextFromBlocks(
+        document.blocks as unknown as Array<Record<string, unknown>>,
+      );
     } catch {
       // If parsing fails, return empty string
       return '';

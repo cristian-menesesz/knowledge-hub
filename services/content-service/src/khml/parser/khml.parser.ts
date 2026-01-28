@@ -9,6 +9,7 @@ import {
   ParagraphBlock,
   HeadingBlock,
   CodeBlock,
+  ExecBlock,
   QuoteBlock,
   DefinitionBlock,
   ImageBlock,
@@ -141,7 +142,7 @@ export class KHMLParser {
       case 'h4':
       case 'h5':
       case 'h6':
-        return this.parseHeading(id, parseInt(type[1]));
+        return this.parseHeading(id, parseInt(type[1]) as 1 | 2 | 3 | 4 | 5 | 6);
       case 'code':
         return this.parseCode(id, false);
       case 'exec':
@@ -198,7 +199,7 @@ export class KHMLParser {
     };
   }
 
-  private parseCode(id: string, executable: boolean): CodeBlock {
+  private parseCode(id: string, executable: boolean): CodeBlock | ExecBlock {
     const attributes = this.parseAttributes();
     const language = (attributes.lang as string) || 'text';
 
@@ -219,14 +220,14 @@ export class KHMLParser {
 
     return {
       id,
-      type: executable ? (BlockType.EXEC as BlockType) : BlockType.CODE,
+      type: executable ? BlockType.EXEC : BlockType.CODE,
       attributes,
       language,
       code: code.trim(),
       highlight: attributes.highlight as number[],
       title: attributes.title as string,
       showLineNumbers: (attributes.showLineNumbers as boolean) ?? true,
-    };
+    } as CodeBlock | ExecBlock;
   }
 
   private parseQuote(id: string): QuoteBlock {
