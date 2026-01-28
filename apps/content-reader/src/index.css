@@ -1,0 +1,85 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  margin: 0;
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
+    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family:
+    source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
+
+/* Reading-optimized styles */
+.reading-content {
+  line-height: 1.7;
+  font-size: 1.125rem;
+}
+
+.reading-content h1 {
+  @apply text-4xl font-bold mt-8 mb-4;
+}
+
+.reading-content h2 {
+  @apply text-3xl font-bold mt-6 mb-3;
+}
+
+.reading-content h3 {
+  @apply text-2xl font-semibold mt-5 mb-2;
+}
+
+.reading-content p {
+  @apply mb-4;
+}
+
+.reading-content ul,
+.reading-content ol {
+  @apply mb-4 pl-6;
+}
+
+.reading-content li {
+  @apply mb-2;
+}
+
+.reading-content pre {
+  @apply bg-gray-100 rounded-lg p-4 mb-4 overflow-x-auto;
+}
+
+.reading-content code {
+  @apply bg-gray-100 px-1 py-0.5 rounded text-sm;
+}
+
+.reading-content pre code {
+  @apply bg-transparent px-0 py-0;
+}
+
+.reading-content blockquote {
+  @apply border-l-4 border-blue-500 pl-4 italic my-4 text-gray-700;
+}
+
+.reading-content img {
+  @apply rounded-lg my-4 max-w-full h-auto;
+}
+
+.reading-content a {
+  @apply text-blue-600 hover:text-blue-800 underline;
+}
+
+.reading-content table {
+  @apply w-full border-collapse mb-4;
+}
+
+.reading-content th,
+.reading-content td {
+  @apply border border-gray-300 px-4 py-2;
+}
+
+.reading-content th {
+  @apply bg-gray-100 font-semibold;
+}
