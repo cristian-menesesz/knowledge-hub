@@ -2601,12 +2601,27 @@ components
 
 **Next**: Testing & Quality (Phase 2.9)
 
-### 2.9 Testing & Quality
+### 2.9 Testing & Quality ⏳
 
-- [ ] TEST-INT-001: API integration tests (Supertest)
+- [x] TEST-INT-001: API integration tests (Supertest) (2026-01-28)
+  - jest.integration.config.ts created with TypeScript support
+  - .env.test environment configuration
+  - api.integration.spec.ts created with 8 passing tests
+  - Health checks, API structure, validation, error handling
+  - Test infrastructure: supertest, ts-jest, @types/jest installed
+  - npm test scripts: test:integration, test:integration:watch, test:integration:cov
 - [ ] TEST-UNIT-002: Service layer tests
+  - ContentService unit tests needed
+  - VersionService unit tests needed
+  - KHML parser/renderer tests (refactor from .skip files)
 - [ ] TEST-UNIT-003: Component tests
+  - Frontend MFE component tests (React Testing Library)
+  - Design system component tests
 - [ ] DEVOPS-CI-003: Jenkins setup for integration tests
+
+**Status**: ⏳ Phase 2.9 in progress (~25% complete) - Integration test foundation established
+
+**Next**: Create service layer unit tests (TEST-UNIT-002)
 
 **Deliverable**: ✅ MVP CMS - Create, edit, publish content with basic editor
 
