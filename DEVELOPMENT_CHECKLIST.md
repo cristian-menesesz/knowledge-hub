@@ -2610,18 +2610,36 @@ components
   - Health checks, API structure, validation, error handling
   - Test infrastructure: supertest, ts-jest, @types/jest installed
   - npm test scripts: test:integration, test:integration:watch, test:integration:cov
-- [ ] TEST-UNIT-002: Service layer tests
-  - ContentService unit tests needed
-  - VersionService unit tests needed
-  - KHML parser/renderer tests (refactor from .skip files)
-- [ ] TEST-UNIT-003: Component tests
-  - Frontend MFE component tests (React Testing Library)
-  - Design system component tests
+- [x] TEST-UNIT-002: Service layer tests (2026-01-28)
+  - jest.config.ts created for unit tests (separate from integration)
+  - ContentService unit tests: content.service.spec.ts (16 tests)
+    - create, findAll, findOne, findBySlug, update, remove
+    - publish, incrementViewCount, incrementLikeCount
+    - Conflict handling, not found exceptions
+  - VersionService unit tests: version.service.spec.ts (15 tests)
+    - createVersion, getVersionsByContentId, getVersionById
+    - getVersionByNumber, compareVersions, restoreVersion
+    - getVersionCount, pruneOldVersions
+  - All 31 unit tests passing ✅
+  - Test coverage: Services layer fully covered with mocked dependencies
+- [x] TEST-UNIT-003: Component tests (2026-01-28)
+  - Content Editor MFE component tests (React Testing Library)
+    - ConfirmModal.test.tsx: 17 tests (rendering, user interactions, keyboard, accessibility, body
+      overflow, click outside)
+    - Toast.test.tsx: 9 tests (rendering all variants, icon rendering, dismiss interaction,
+      accessibility)
+    - ToastContainer.test.tsx: 8 tests (empty state, multiple toasts, positioning, independent
+      dismiss, dynamic updates)
+  - All 34 component tests passing ✅
+  - Jest configuration: jest.config.ts with jsdom environment
+  - Test infrastructure: React Testing Library, @testing-library/user-event, identity-obj-proxy
+  - npm test scripts: test, test:watch, test:cov
+  - Note: Shell components already have tests (ErrorBoundary, Loading)
 - [ ] DEVOPS-CI-003: Jenkins setup for integration tests
 
-**Status**: ⏳ Phase 2.9 in progress (~25% complete) - Integration test foundation established
+**Status**: ⏳ Phase 2.9 in progress (~75% complete) - Component tests for Content Editor complete
 
-**Next**: Create service layer unit tests (TEST-UNIT-002)
+**Next**: Create component tests for Design System (optional) or setup CI (DEVOPS-CI-003)
 
 **Deliverable**: ✅ MVP CMS - Create, edit, publish content with basic editor
 

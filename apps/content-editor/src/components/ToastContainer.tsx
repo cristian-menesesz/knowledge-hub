@@ -1,3 +1,5 @@
+import React from 'react';
+
 import type { Toast as ToastType } from '../hooks/useToast';
 
 import Toast from './Toast';
