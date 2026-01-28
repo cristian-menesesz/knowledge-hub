@@ -2519,13 +2519,20 @@ with complex @meta syntax
   - Toast notifications for save success/errors
   - Unsaved changes tracking
   - "Saved X minutes ago" display
-- [ ] CMS-012: Publishing workflow (draft → published) ⏳ NEXT
+- [x] CMS-012: Publishing workflow (draft → published) (2026-01-28)
+  - Content API client module with publish endpoint
+  - ConfirmModal component for publish confirmation
+  - Publish button in editor header with loading states
+  - Publish logic that saves draft before publishing
+  - Creates published content from draft
+  - Success/error toast notifications
+  - Proper error handling and user feedback
 - [ ] CMS-009: Markdown import capability
 - [ ] CMS-010: Markdown export capability
 
-**Status**: ✅ Auto-save functional, saving every 30 seconds with visual feedback
+**Status**: ✅ Phase 2.6 complete - Auto-save and publishing workflow fully functional
 
-**Next**: Implement publishing workflow UI in Content Editor
+**Next**: Content Reader MFE (Phase 2.7) or fix KHML parser meta block syntax
 
 ### 2.7 Content Reader MFE (Basic)
 

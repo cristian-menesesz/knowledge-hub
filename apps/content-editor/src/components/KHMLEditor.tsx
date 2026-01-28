@@ -7,14 +7,18 @@ import {
   Loader2,
   Save,
   Clock,
+  Send,
 } from 'lucide-react';
 import type { editor } from 'monaco-editor';
 import { useState, useEffect, useCallback, useRef } from 'react';
 
+import type { ContentType } from '../api/content';
+import { contentApi, ContentDifficulty } from '../api/content';
 import { draftApi } from '../api/draft';
 import { khmlApi } from '../api/khml';
 import { useToast } from '../hooks/useToast';
 
+import ConfirmModal from './ConfirmModal';
 import ToastContainer from './ToastContainer';
 
 const INITIAL_KHML = `@article{
@@ -70,6 +74,8 @@ export default function KHMLEditor() {
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [draftId, setDraftId] = useState<string | null>(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [isPublishing, setIsPublishing] = useState(false);
+  const [showPublishModal, setShowPublishModal] = useState(false);
 
   const autoSaveTimerRef = useRef<NodeJS.Timeout | null>(null);
   const { toasts, dismissToast, success, error: showError } = useToast();
@@ -211,6 +217,68 @@ export default function KHMLEditor() {
     return date.toLocaleDateString();
   };
 
+  // Handle publish
+  const handlePublish = async () => {
+    if (!draftId) {
+      showError('No draft to publish');
+      return;
+    }
+
+    // Save draft first if there are unsaved changes
+    if (hasUnsavedChanges) {
+      try {
+        setIsSaving(true);
+        await draftApi.autoSave(draftId, source);
+        setHasUnsavedChanges(false);
+      } catch (err) {
+        showError('Failed to save draft before publishing');
+        setIsSaving(false);
+        return;
+      } finally {
+        setIsSaving(false);
+      }
+    }
+
+    setShowPublishModal(true);
+  };
+
+  const confirmPublish = async () => {
+    setShowPublishModal(false);
+    setIsPublishing(true);
+
+    try {
+      // Get draft data to extract metadata
+      const draft = await draftApi.getById(draftId!);
+
+      // Create published content
+      const content = await contentApi.create({
+        title: draft.title,
+        slug: draft.title
+          .toLowerCase()
+          .replace(/\s+/g, '-')
+          .replace(/[^a-z0-9-]/g, ''),
+        description: draft.title, // TODO: Extract from meta block
+        contentType: draft.contentType as ContentType,
+        authorId: draft.authorId,
+        tags: draft.tags || [],
+        concepts: [],
+        category: 'uncategorized',
+        difficulty: ContentDifficulty.BEGINNER,
+        khmlContent: draft.content,
+      });
+
+      success(`Content published successfully! ID: ${content.id}`);
+
+      // Note: Draft status management handled by backend
+      // We keep the draft for version history
+    } catch (err: any) {
+      console.error('Failed to publish content:', err);
+      showError(err.response?.data?.message || 'Failed to publish content');
+    } finally {
+      setIsPublishing(false);
+    }
+  };
+
   return (
     <div className="flex h-screen flex-col bg-background">
       {/* Header */}
@@ -247,6 +315,25 @@ export default function KHMLEditor() {
           <span className="text-sm text-muted-foreground">
             {wordCount} words
           </span>
+
+          {/* Publish button */}
+          <button
+            onClick={handlePublish}
+            disabled={isPublishing || isSaving || !draftId}
+            className="flex items-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {isPublishing ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                <span>Publishing...</span>
+              </>
+            ) : (
+              <>
+                <Send className="h-4 w-4" />
+                <span>Publish</span>
+              </>
+            )}
+          </button>
 
           {/* Validation status */}
           <div className="flex items-center gap-2">
@@ -344,6 +431,18 @@ export default function KHMLEditor() {
           />
         </div>
       </div>
+
+      {/* Publish confirmation modal */}
+      <ConfirmModal
+        isOpen={showPublishModal}
+        title="Publish Content"
+        message="Are you sure you want to publish this content? It will be publicly visible."
+        confirmText="Publish"
+        cancelText="Cancel"
+        confirmVariant="primary"
+        onConfirm={confirmPublish}
+        onCancel={() => setShowPublishModal(false)}
+      />
 
       {/* Toast notifications */}
       <ToastContainer toasts={toasts} onDismiss={dismissToast} />
