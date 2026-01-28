@@ -2566,15 +2566,40 @@ with complex @meta syntax
 **Status**: ✅ Phase 2.7 complete - Full-featured Content Reader with pagination, TOC, and syntax
 highlighting
 
-**Next**: Design System Expansion (Phase 2.8) or add reading time calculation
+**Next**: Testing & Quality (Phase 2.9)
 
-### 2.8 Design System Expansion
+### 2.8 Design System Expansion ✅
 
-- [ ] DS-COMP-004: Card components
-- [ ] DS-COMP-005: Modal/Dialog components
-- [ ] DS-COMP-006: Navigation components
-- [ ] DS-COMP-007: Feedback components
-- [ ] DS-COMP-010: NPM package publication
+- [x] DS-COMP-004: Card components (2026-01-28)
+  - Card.stories.tsx created with 11 variants
+  - Real-world examples: article preview, user profile, stats dashboard
+  - Demonstrates all padding and shadow combinations
+- [x] DS-COMP-005: Modal/Dialog components (2026-01-28)
+  - Dialog.stories.tsx created with 9 variants
+  - Forms, confirmations, controlled state, alerts, success messages
+  - Accessibility features: ESC handling, focus trap, animations
+- [x] DS-COMP-006: Toast/Notification components (2026-01-28)
+  - Toast.stories.tsx created with 11 variants
+  - All 5 variants (default, success, error, warning, info)
+  - Auto-dismiss functionality, multiple toasts stacking
+- [x] DS-COMP-007: Tabs components (2026-01-28)
+  - Tabs.stories.tsx created with 9 variants
+  - Settings panel, dashboard, controlled tabs, scrollable content
+  - Keyboard navigation and accessibility demonstrations
+- [x] DS-COMP-008: Checkbox components (2026-01-28)
+  - Checkbox.stories.tsx created with 12 variants
+  - Form validation, select all patterns, task lists, settings panels
+  - Indeterminate state, controlled/uncontrolled usage
+- [x] DS-COMP-010: Storybook documentation (2026-01-28)
+  - 5 comprehensive story files created (~1,400 lines total)
+  - 52 interactive story variants across all components
+  - Real-world usage patterns and integration examples
+  - Comprehensive accessibility demonstrations
+
+**Status**: ✅ Phase 2.8 complete - Comprehensive Storybook documentation for all design system
+components
+
+**Next**: Testing & Quality (Phase 2.9)
 
 ### 2.9 Testing & Quality
 
