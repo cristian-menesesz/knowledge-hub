@@ -2512,10 +2512,18 @@ with complex @meta syntax
   - Workflow status management (5 states: draft, in-review, scheduled, published, archived)
   - Statistics and filtering capabilities
   - Version tracking per draft
+- [x] CMS-008: Auto-save implementation (frontend) (2026-01-28)
+  - Draft API client module created
+  - Auto-save timer (30-second interval)
+  - Save status indicator in editor header
+  - Toast notifications for save success/errors
+  - Unsaved changes tracking
+  - "Saved X minutes ago" display
 - [ ] CMS-012: Publishing workflow (draft → published) ⏳ NEXT
-- [ ] CMS-008: Auto-save implementation (frontend)
 - [ ] CMS-009: Markdown import capability
 - [ ] CMS-010: Markdown export capability
+
+**Status**: ✅ Auto-save functional, saving every 30 seconds with visual feedback
 
 **Next**: Implement publishing workflow UI in Content Editor
 

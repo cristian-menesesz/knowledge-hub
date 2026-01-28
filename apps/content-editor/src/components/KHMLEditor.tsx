@@ -1,9 +1,21 @@
 import Editor from '@monaco-editor/react';
-import { FileText, Eye, AlertCircle, CheckCircle, Loader2 } from 'lucide-react';
+import {
+  FileText,
+  Eye,
+  AlertCircle,
+  CheckCircle,
+  Loader2,
+  Save,
+  Clock,
+} from 'lucide-react';
 import type { editor } from 'monaco-editor';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 
+import { draftApi } from '../api/draft';
 import { khmlApi } from '../api/khml';
+import { useToast } from '../hooks/useToast';
+
+import ToastContainer from './ToastContainer';
 
 const INITIAL_KHML = `@article{
   @meta[
@@ -54,6 +66,69 @@ export default function KHMLEditor() {
   const [isValidating, setIsValidating] = useState(false);
   const [isRendering, setIsRendering] = useState(false);
   const [wordCount, setWordCount] = useState(0);
+  const [isSaving, setIsSaving] = useState(false);
+  const [lastSaved, setLastSaved] = useState<Date | null>(null);
+  const [draftId, setDraftId] = useState<string | null>(null);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+
+  const autoSaveTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const { toasts, dismissToast, success, error: showError } = useToast();
+
+  // Initialize draft on mount
+  useEffect(() => {
+    const initializeDraft = async () => {
+      try {
+        // TODO: Get authorId from auth context
+        const draft = await draftApi.create({
+          title: 'Untitled Draft',
+          content: INITIAL_KHML,
+          authorId: 'temp-author-id', // Replace with actual auth
+          contentType: 'article',
+          tags: [],
+          category: 'uncategorized',
+        });
+        setDraftId(draft.id);
+        setLastSaved(new Date(draft.updatedAt));
+      } catch (err) {
+        console.error('Failed to initialize draft:', err);
+        showError('Failed to create draft');
+      }
+    };
+
+    initializeDraft();
+  }, [showError]);
+
+  // Auto-save effect
+  useEffect(() => {
+    if (!draftId || !hasUnsavedChanges) return;
+
+    // Clear existing timer
+    if (autoSaveTimerRef.current) {
+      clearTimeout(autoSaveTimerRef.current);
+    }
+
+    // Set new auto-save timer (30 seconds)
+    autoSaveTimerRef.current = setTimeout(async () => {
+      setIsSaving(true);
+      try {
+        const result = await draftApi.autoSave(draftId, source);
+        setLastSaved(new Date(result.lastSavedAt));
+        setHasUnsavedChanges(false);
+        success('Draft saved', 2000);
+      } catch (err) {
+        console.error('Auto-save failed:', err);
+        showError('Failed to save draft');
+      } finally {
+        setIsSaving(false);
+      }
+    }, 30000); // 30 seconds
+
+    return () => {
+      if (autoSaveTimerRef.current) {
+        clearTimeout(autoSaveTimerRef.current);
+      }
+    };
+  }, [draftId, source, hasUnsavedChanges, success, showError]);
 
   // Debounced validation
   useEffect(() => {
@@ -104,6 +179,7 @@ export default function KHMLEditor() {
 
   const handleEditorChange = useCallback((value: string | undefined) => {
     setSource(value || '');
+    setHasUnsavedChanges(true);
   }, []);
 
   const handleEditorMount = (editor: editor.IStandaloneCodeEditor) => {
@@ -123,6 +199,18 @@ export default function KHMLEditor() {
 
   const validationStatus = errors.length === 0 && !isValidating;
 
+  // Format last saved time
+  const formatLastSaved = (date: Date | null) => {
+    if (!date) return 'Not saved';
+    const now = new Date();
+    const diff = Math.floor((now.getTime() - date.getTime()) / 1000);
+
+    if (diff < 60) return 'Just now';
+    if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+    if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+    return date.toLocaleDateString();
+  };
+
   return (
     <div className="flex h-screen flex-col bg-background">
       {/* Header */}
@@ -133,6 +221,28 @@ export default function KHMLEditor() {
         </div>
 
         <div className="flex items-center gap-4">
+          {/* Auto-save status */}
+          <div className="flex items-center gap-2">
+            {isSaving ? (
+              <>
+                <Save className="h-4 w-4 animate-pulse text-blue-500" />
+                <span className="text-sm text-blue-600">Saving...</span>
+              </>
+            ) : hasUnsavedChanges ? (
+              <>
+                <Clock className="h-4 w-4 text-amber-500" />
+                <span className="text-sm text-amber-600">Unsaved changes</span>
+              </>
+            ) : lastSaved ? (
+              <>
+                <CheckCircle className="h-4 w-4 text-green-500" />
+                <span className="text-sm text-muted-foreground">
+                  Saved {formatLastSaved(lastSaved)}
+                </span>
+              </>
+            ) : null}
+          </div>
+
           {/* Word count */}
           <span className="text-sm text-muted-foreground">
             {wordCount} words
@@ -234,6 +344,9 @@ export default function KHMLEditor() {
           />
         </div>
       </div>
+
+      {/* Toast notifications */}
+      <ToastContainer toasts={toasts} onDismiss={dismissToast} />
     </div>
   );
 }
