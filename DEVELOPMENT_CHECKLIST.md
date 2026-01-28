@@ -2477,10 +2477,30 @@ validated
 
 ### 2.5 Content Editor MFE
 
+- [x] MFE-EDITOR-001: Project setup (2026-01-28)
+  - Vite + React + TypeScript configured
+  - Monaco Editor integrated for KHML editing
+  - Running on port 3010 with proxy to Content Service
+- [x] MFE-EDITOR-002: KHML editing interface (2026-01-28)
+  - Split-pane layout (editor + preview)
+  - Real-time KHML validation (debounced 500ms)
+  - Real-time HTML rendering (debounced 1s)
+  - Syntax error highlighting with line/column
+  - Word count tracker
+  - Validation status indicators
+- [x] MFE-EDITOR-003: API integration (2026-01-28)
+  - KHML validation API connected
+  - KHML rendering API connected
+  - Text extraction API connected
+  - Metadata extraction API connected
+  - Proper error handling
 - [ ] MFE-EDITOR-004: Asset upload integration
 - [ ] MFE-EDITOR-005: Metadata management UI
 - [ ] CMS-014: Tag management
 - [ ] CMS-015: Concept assignment
+
+**Status**: ✅ Core editor functional, backend integration working, KHML parser has some edge cases
+with complex @meta syntax
 
 ### 2.6 Draft/Publish Workflow
 
@@ -2492,10 +2512,12 @@ validated
   - Workflow status management (5 states: draft, in-review, scheduled, published, archived)
   - Statistics and filtering capabilities
   - Version tracking per draft
-- [ ] CMS-012: Publishing workflow (draft → published)
-- [ ] CMS-008: Auto-save implementation
+- [ ] CMS-012: Publishing workflow (draft → published) ⏳ NEXT
+- [ ] CMS-008: Auto-save implementation (frontend)
 - [ ] CMS-009: Markdown import capability
 - [ ] CMS-010: Markdown export capability
+
+**Next**: Implement publishing workflow UI in Content Editor
 
 ### 2.7 Content Reader MFE (Basic)
 
