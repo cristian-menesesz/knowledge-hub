@@ -1,22 +1,14 @@
 import { Controller, Post, Body, HttpCode, HttpStatus } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 import { KHMLService } from '../services/khml.service';
-
-class ParseKHMLDto {
-  source: string;
-}
-
-class RenderKHMLDto {
-  source: string;
-}
-
-class ValidateKHMLDto {
-  source: string;
-}
-
-class ConvertMarkdownDto {
-  markdown: string;
-}
+import {
+  ParseKHMLDto,
+  RenderKHMLDto,
+  ValidateKHMLDto,
+  ExtractTextDto,
+  ExtractMetadataDto,
+  ConvertMarkdownDto,
+} from '../dto/khml.dto';
 
 @ApiTags('KHML')
 @Controller('khml')
@@ -111,7 +103,7 @@ export class KHMLController {
     summary: 'Extract plain text from KHML',
     description: 'Extracts plain text content for search indexing',
   })
-  @ApiBody({ type: ParseKHMLDto })
+  @ApiBody({ type: ExtractTextDto })
   @ApiResponse({
     status: 200,
     description: 'Extracted plain text',
@@ -120,7 +112,7 @@ export class KHMLController {
       example: 'Introduction to Algorithms Algorithms are step-by-step procedures...',
     },
   })
-  extractText(@Body() dto: ParseKHMLDto) {
+  extractText(@Body() dto: ExtractTextDto) {
     return {
       text: this.khmlService.extractPlainText(dto.source),
     };
@@ -132,7 +124,7 @@ export class KHMLController {
     summary: 'Extract metadata from KHML',
     description: 'Extracts document metadata (title, author, tags, etc.)',
   })
-  @ApiBody({ type: ParseKHMLDto })
+  @ApiBody({ type: ExtractMetadataDto })
   @ApiResponse({
     status: 200,
     description: 'Extracted metadata',
@@ -146,7 +138,7 @@ export class KHMLController {
       },
     },
   })
-  extractMetadata(@Body() dto: ParseKHMLDto) {
+  extractMetadata(@Body() dto: ExtractMetadataDto) {
     return this.khmlService.extractMetadata(dto.source);
   }
 

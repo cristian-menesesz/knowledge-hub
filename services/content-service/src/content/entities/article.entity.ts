@@ -20,8 +20,33 @@ export class Article extends Content {
   @Column({ type: 'text', nullable: true })
   introduction: string;
 
+  /**
+   * Article body - Parsed KHML document in JSONB format
+   *
+   * This field stores the structured KHML document after parsing.
+   * Structure follows the KHMLDocument interface:
+   * {
+   *   version: '1.0',
+   *   blocks: [...],
+   *   metadata: {...}
+   * }
+   *
+   * @see KHML_SPECIFICATION.md for detailed structure
+   * @see services/khml for parser and renderer
+   */
   @Column({ type: 'jsonb', nullable: true })
-  body: Record<string, unknown>; // Block-based content structure (from editor)
+  body: Record<string, unknown>; // KHML parsed to JSONB
+
+  /**
+   * Raw KHML source (optional)
+   *
+   * Store the original KHML source for:
+   * - Version control and diffs
+   * - Re-parsing if KHML spec changes
+   * - Editor display without re-serialization
+   */
+  @Column({ type: 'text', nullable: true, name: 'body_source' })
+  bodySource: string; // Original KHML source
 
   @Column({ type: 'text', nullable: true })
   conclusion: string;

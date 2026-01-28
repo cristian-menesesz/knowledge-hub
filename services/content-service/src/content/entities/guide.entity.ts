@@ -62,6 +62,26 @@ export class Guide extends Content {
   @Column({ type: 'text', nullable: true })
   overview: string;
 
+  /**
+   * Guide body - Parsed KHML document in JSONB format
+   *
+   * This field stores the structured KHML document for the main guide content.
+   * Structure follows the KHMLDocument interface.
+   *
+   * @see KHML_SPECIFICATION.md for detailed structure
+   * @see services/khml for parser and renderer
+   */
+  @Column({ type: 'jsonb', nullable: true })
+  body: Record<string, unknown>; // KHML parsed to JSONB
+
+  /**
+   * Raw KHML source (optional)
+   *
+   * Store the original KHML source for version control and re-parsing.
+   */
+  @Column({ type: 'text', nullable: true, name: 'body_source' })
+  bodySource: string; // Original KHML source
+
   @Column({ type: 'jsonb', nullable: true })
   steps: {
     order: number;
@@ -77,7 +97,7 @@ export class Guide extends Content {
   @Column({ type: 'jsonb', nullable: true })
   sections: {
     title: string;
-    content: Record<string, unknown>; // Block-based content
+    content: Record<string, unknown>; // Can also be KHML JSONB
     order: number;
   }[];
 
