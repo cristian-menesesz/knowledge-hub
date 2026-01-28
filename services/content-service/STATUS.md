@@ -18,14 +18,60 @@
 
 ## Test Files Status
 
-**Bypassed for MVP** (renamed to `.skip`):
+### Integration Tests ✅ (Phase 2.9)
+
+**Created** (2026-01-28):
+
+- `src/test/integration/api.integration.spec.ts` (8 passing tests)
+- `jest.integration.config.ts` - Jest configuration for integration tests
+- `src/test/setup.ts` - Global test setup with console mocking
+- `.env.test` - Test environment configuration
+
+**Test Scripts**:
+
+- `npm run test:integration` - Run integration tests
+- `npm run test:integration:watch` - Watch mode
+- `npm run test:integration:cov` - Coverage report
+
+**Status**: ✅ 8/8 tests passing (Health checks, validation, error handling)
+
+### Unit Tests ✅ (Phase 2.9)
+
+**Created** (2026-01-28):
+
+- `src/content/content.service.spec.ts` (16 passing tests)
+  - Tests: create, findAll, findOne, findBySlug, update, remove, publish
+  - Tests: incrementViewCount, incrementLikeCount
+  - Mocks: ContentRepository, VersionService
+- `src/content/version.service.spec.ts` (15 passing tests)
+  - Tests: createVersion, getVersionsByContentId, getVersionById
+  - Tests: getVersionByNumber, compareVersions, restoreVersion
+  - Tests: getVersionCount, pruneOldVersions
+  - Mocks: ContentVersionRepository, ContentRepository
+- `jest.config.ts` - Jest configuration for unit tests (separate from integration)
+
+**Test Scripts**:
+
+- `npm run test` - Run all unit tests
+- `npm run test:watch` - Watch mode
+- `npm run test:cov` - Coverage report
+
+**Status**: ✅ 31/31 tests passing (16 ContentService + 15 VersionService)
+
+**Pending**:
+
+- Component tests for frontend MFEs (React Testing Library)
+
+### KHML Tests (Bypassed for MVP)
+
+**Bypassed** (renamed to `.skip`):
 
 - `khml.lexer.spec.ts.skip` (347 lines)
 - `khml.parser.spec.ts.skip` (414 lines)
 - `khml.renderer.spec.ts.skip` (687 lines)
 
 **Reason**: 106+ type errors due to outdated test mocks (BlockType enum mismatches, missing properties)  
-**Next Step**: Comprehensive refactoring in Phase 2.9 Testing
+**Next Step**: Refactor in later phase after unit test infrastructure is stable
 
 ## Missing Configuration
 
