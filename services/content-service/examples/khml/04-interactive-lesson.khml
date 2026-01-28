@@ -1,0 +1,432 @@
+@article{
+  @meta{
+    title: "Interactive TypeScript Tutorial"
+    author: "Alex Chen"
+    tags: ["typescript", "javascript", "interactive", "tutorial"]
+    difficulty: intermediate
+    estimatedReadingTime: 25
+  }
+
+  @content{
+    @h1{TypeScript Type System Deep Dive}
+
+    @p{
+      TypeScript adds a powerful static type system to JavaScript. 
+      Let's explore it through interactive examples.
+    }
+
+    @h2{Basic Types}
+
+    @tabs{
+      @tab{
+        label: "Primitives"
+        @@@
+        @p{
+          TypeScript supports all JavaScript primitives with type annotations.
+        }
+
+        @code{
+          lang: "typescript"
+          @@@
+// String
+let username: string = "Alice";
+let greeting: string = `Hello, ${username}!`;
+
+// Number
+let age: number = 25;
+let price: number = 19.99;
+let hex: number = 0xf00d;
+
+// Boolean
+let isActive: boolean = true;
+let hasPermission: boolean = false;
+
+// Null and Undefined
+let empty: null = null;
+let notDefined: undefined = undefined;
+          @@@
+        }
+        @@@
+      }
+
+      @tab{
+        label: "Arrays & Tuples"
+        @@@
+        @p{
+          Arrays can be typed in two ways, and tuples provide fixed-length arrays.
+        }
+
+        @code{
+          lang: "typescript"
+          @@@
+// Array type annotation (two syntaxes)
+let numbers: number[] = [1, 2, 3, 4, 5];
+let strings: Array<string> = ["a", "b", "c"];
+
+// Multi-dimensional arrays
+let matrix: number[][] = [
+  [1, 2, 3],
+  [4, 5, 6]
+];
+
+// Tuples - fixed length, specific types
+let person: [string, number, boolean] = ["Alice", 25, true];
+let rgb: [number, number, number] = [255, 0, 128];
+
+// Accessing tuple elements
+let name = person[0];  // string
+let age = person[1];   // number
+          @@@
+        }
+        @@@
+      }
+
+      @tab{
+        label: "Objects & Interfaces"
+        @@@
+        @p{
+          Object types can be defined inline or with interfaces.
+        }
+
+        @code{
+          lang: "typescript"
+          @@@
+// Interface definition
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  age?: number;  // Optional property
+  readonly createdAt: Date;  // Read-only
+}
+
+// Using the interface
+const user: User = {
+  id: 1,
+  name: "Alice Johnson",
+  email: "alice@example.com",
+  createdAt: new Date()
+};
+
+// Inline object type
+function createUser(data: {
+  name: string;
+  email: string;
+}): User {
+  return {
+    id: Date.now(),
+    name: data.name,
+    email: data.email,
+    createdAt: new Date()
+  };
+}
+          @@@
+        }
+        @@@
+      }
+    }
+
+    @h2{Advanced Types}
+
+    @definition{
+      term: "Union Types"
+      @@@
+      A union type describes a value that can be one of several types. 
+      Use the `|` (pipe) symbol to combine types.
+      @@@
+    }
+
+    @code{
+      lang: "typescript"
+      caption: "Union type examples"
+      @@@
+// Union types
+let id: string | number;
+id = "abc123";  // OK
+id = 123;       // OK
+id = true;      // Error: boolean not in union
+
+// Function with union parameter
+function printId(id: string | number) {
+  // Type narrowing with typeof
+  if (typeof id === "string") {
+    console.log(id.toUpperCase());
+  } else {
+    console.log(id.toFixed(2));
+  }
+}
+
+// Union of literal types
+type Status = "pending" | "approved" | "rejected";
+let orderStatus: Status = "pending";  // OK
+orderStatus = "shipped";  // Error: not in union
+      @@@
+    }
+
+    @definition{
+      term: "Intersection Types"
+      @@@
+      An intersection type combines multiple types into one. 
+      Use the `&` (ampersand) symbol to combine types.
+      @@@
+    }
+
+    @code{
+      lang: "typescript"
+      caption: "Intersection type examples"
+      @@@
+interface Identifiable {
+  id: number;
+}
+
+interface Timestamped {
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// Intersection type
+type Entity = Identifiable & Timestamped;
+
+const article: Entity = {
+  id: 1,
+  createdAt: new Date(),
+  updatedAt: new Date()
+};
+
+// Combining multiple interfaces
+interface HasName {
+  name: string;
+}
+
+interface HasAge {
+  age: number;
+}
+
+type Person = HasName & HasAge;
+      @@@
+    }
+
+    @h2{Interactive Quiz}
+
+    @quiz{
+      @@@
+## Type System Quiz
+
+Test your understanding of TypeScript's type system.
+
+1. **Which of these is a valid TypeScript union type?**
+   - [ ] `let x: string + number;`
+   - [x] `let x: string | number;`
+   - [ ] `let x: string & number;`
+   - [ ] `let x: string, number;`
+
+2. **What does the `readonly` modifier do?**
+   - [ ] Makes a variable constant
+   - [x] Prevents modification after initialization
+   - [ ] Creates an immutable copy
+   - [ ] Throws an error on read access
+
+3. **What's the difference between `any` and `unknown`?**
+   - [ ] No difference, they're the same
+   - [x] `unknown` requires type checking before use
+   - [ ] `any` is deprecated
+   - [ ] `unknown` allows null but `any` doesn't
+      @@@
+    }
+
+    @h2{Try It Yourself}
+
+    @playground{
+      title: "TypeScript Type Narrowing"
+      lang: "typescript"
+      @@@
+// Try modifying this code to experiment with type narrowing
+
+function processValue(value: string | number | boolean) {
+  if (typeof value === "string") {
+    // value is narrowed to string here
+    return value.toUpperCase();
+  } else if (typeof value === "number") {
+    // value is narrowed to number here
+    return value.toFixed(2);
+  } else {
+    // value is narrowed to boolean here
+    return value ? "Yes" : "No";
+  }
+}
+
+console.log(processValue("hello"));  // "HELLO"
+console.log(processValue(3.14159)); // "3.14"
+console.log(processValue(true));    // "Yes"
+
+// Try adding your own examples:
+// 1. Create a union type with more than 3 types
+// 2. Use type guards to narrow the types
+// 3. Handle each type differently
+      @@@
+    }
+
+    @h2{Generics}
+
+    @p{
+      Generics allow you to write reusable, type-safe code.
+    }
+
+    @definition{
+      term: "Generic Functions"
+      @@@
+      Functions that work with any type while preserving type information.
+      @@@
+    }
+
+    @code{
+      lang: "typescript"
+      caption: "Generic function examples"
+      @@@
+// Generic identity function
+function identity<T>(value: T): T {
+  return value;
+}
+
+// Type is inferred
+let num = identity(42);        // number
+let str = identity("hello");   // string
+
+// Explicit type parameter
+let bool = identity<boolean>(true);
+
+// Generic with constraints
+interface HasLength {
+  length: number;
+}
+
+function logLength<T extends HasLength>(value: T): void {
+  console.log(value.length);
+}
+
+logLength("hello");      // OK: string has length
+logLength([1, 2, 3]);    // OK: array has length
+logLength({ length: 5 }); // OK: object has length
+// logLength(42);         // Error: number doesn't have length
+      @@@
+    }
+
+    @collapsible{
+      summary: "Generic Classes Example"
+      @@@
+      @code{
+        lang: "typescript"
+        @@@
+// Generic class
+class Box<T> {
+  private value: T;
+
+  constructor(value: T) {
+    this.value = value;
+  }
+
+  getValue(): T {
+    return this.value;
+  }
+
+  setValue(value: T): void {
+    this.value = value;
+  }
+}
+
+// Usage
+const numberBox = new Box<number>(42);
+console.log(numberBox.getValue());  // 42
+
+const stringBox = new Box<string>("hello");
+console.log(stringBox.getValue());  // "hello"
+
+// Generic constraints in classes
+class Repository<T extends { id: number }> {
+  private items: T[] = [];
+
+  add(item: T): void {
+    this.items.push(item);
+  }
+
+  findById(id: number): T | undefined {
+    return this.items.find(item => item.id === id);
+  }
+}
+        @@@
+      }
+      @@@
+    }
+
+    @h2{Best Practices}
+
+    @info{
+      **Type Inference**: Let TypeScript infer types when possible. 
+      Don't annotate obvious types.
+    }
+
+    @grid{
+      columns: 2
+      @@@
+      @card{
+        title: "❌ Too Verbose"
+        @@@
+        @code{
+          lang: "typescript"
+          @@@
+let name: string = "Alice";
+let age: number = 25;
+let active: boolean = true;
+          @@@
+        }
+        @@@
+      }
+
+      @card{
+        title: "✅ Better"
+        @@@
+        @code{
+          lang: "typescript"
+          @@@
+let name = "Alice";
+let age = 25;
+let active = true;
+          @@@
+        }
+        @@@
+      }
+    }
+
+    @warning{
+      Avoid using `any` type unless absolutely necessary. 
+      It disables type checking and defeats the purpose of TypeScript.
+    }
+
+    @h2{Summary}
+
+    @list{
+      type: unordered
+      @@@
+      - TypeScript adds static typing to JavaScript
+      - Union types (`|`) allow multiple type options
+      - Intersection types (`&`) combine multiple types
+      - Generics enable reusable, type-safe code
+      - Type narrowing refines types in conditional blocks
+      - Prefer type inference over explicit annotations when obvious
+      @@@
+    }
+
+    @h2{Next Steps}
+
+    @example{
+      difficulty: hard
+      @@@
+      **Challenge**: Create a generic `Map` class that stores key-value pairs where:
+      - Keys must be strings or numbers
+      - Values can be any type
+      - Implement `get`, `set`, `has`, and `delete` methods
+      - Add type constraints to ensure type safety
+      @@@
+    }
+  }
+}
