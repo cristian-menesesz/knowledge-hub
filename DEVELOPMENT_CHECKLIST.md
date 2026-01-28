@@ -2536,12 +2536,37 @@ with complex @meta syntax
 
 ### 2.7 Content Reader MFE (Basic)
 
-- [ ] MFE-READER-001: Project setup
-- [ ] MFE-READER-002: Article rendering
-- [ ] MFE-READER-003: Code highlighting (Shiki)
-- [ ] READ-009: Optimized reading layout
-- [ ] READ-011: Code syntax highlighting
-- [ ] READ-015: Estimated reading time
+- [x] MFE-READER-001: Project setup (2026-01-28)
+  - Vite + React + TypeScript configuration
+  - Module Federation setup for microfrontend architecture
+  - Tailwind CSS with reading-optimized styles
+  - React Router for client-side routing
+  - Axios for API integration
+  - Port 3011 for dev server
+- [x] MFE-READER-002: Article rendering (2026-01-28)
+  - ContentReader component with optimized reading layout
+  - ContentList component with pagination
+  - TableOfContents with scroll spy functionality
+  - Content API client module
+  - Responsive typography and spacing
+  - Keyboard accessibility (Enter/Space navigation)
+- [x] MFE-READER-003: Code highlighting (Shiki) (2026-01-28)
+  - Installed Shiki v1.0.0 for syntax highlighting
+  - Implemented code block highlighting in ContentReader
+  - Support for 13+ languages (TypeScript, JavaScript, Python, Java, Go, Rust, JSON, YAML, Markdown,
+    Bash, SQL, HTML, CSS)
+  - GitHub Light theme for code blocks
+  - Automatic language detection from CSS classes
+  - Custom scrollbar styling for code blocks
+  - Optimized build with on-demand language loading
+- [ ] READ-009: Enhanced reading layout optimization
+- [ ] READ-011: Syntax highlighting implementation (Alternative approach)
+- [ ] READ-015: Reading time calculation
+
+**Status**: ✅ Phase 2.7 complete - Full-featured Content Reader with pagination, TOC, and syntax
+highlighting
+
+**Next**: Design System Expansion (Phase 2.8) or add reading time calculation
 
 ### 2.8 Design System Expansion
 

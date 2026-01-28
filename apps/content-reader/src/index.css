@@ -48,7 +48,9 @@ code {
 }
 
 .reading-content pre {
-  @apply bg-gray-100 rounded-lg p-4 mb-4 overflow-x-auto;
+  @apply rounded-lg mb-4 overflow-x-auto;
+  /* Shiki adds its own background colors, so we remove the default */
+  background: transparent !important;
 }
 
 .reading-content code {
@@ -57,6 +59,36 @@ code {
 
 .reading-content pre code {
   @apply bg-transparent px-0 py-0;
+  /* Let Shiki handle all code block styling */
+  background: transparent !important;
+  color: inherit !important;
+}
+
+/* Shiki code block wrapper styling */
+.reading-content pre.shiki,
+.reading-content pre.shiki code {
+  @apply p-4;
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+/* Add scrollbar styling for code blocks */
+.reading-content pre::-webkit-scrollbar {
+  height: 8px;
+}
+
+.reading-content pre::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+
+.reading-content pre::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+}
+
+.reading-content pre::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.5);
 }
 
 .reading-content blockquote {

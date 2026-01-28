@@ -1,6 +1,7 @@
 import { Clock, Calendar, Tag, ArrowLeft, Loader2 } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { getHighlighter, type Highlighter } from 'shiki';
 
 import type { ContentDetail } from '../api/content';
 import { contentApi } from '../api/content';
@@ -14,7 +15,40 @@ const ContentReader: React.FC = () => {
   const [content, setContent] = useState<ContentDetail | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const highlighterRef = useRef<Highlighter | null>(null);
 
+  // Initialize Shiki highlighter
+  useEffect(() => {
+    const initHighlighter = async () => {
+      try {
+        highlighterRef.current = await getHighlighter({
+          themes: ['github-dark', 'github-light'],
+          langs: [
+            'javascript',
+            'typescript',
+            'python',
+            'java',
+            'go',
+            'rust',
+            'json',
+            'yaml',
+            'markdown',
+            'bash',
+            'sql',
+            'html',
+            'css',
+          ],
+        });
+      } catch (err) {
+        console.error('Failed to initialize syntax highlighter:', err);
+      }
+    };
+
+    initHighlighter();
+  }, []);
+
+  // Fetch content
   useEffect(() => {
     const fetchContent = async () => {
       try {
@@ -41,6 +75,52 @@ const ContentReader: React.FC = () => {
 
     fetchContent();
   }, [id, slug]);
+
+  // Apply syntax highlighting to code blocks
+  useEffect(() => {
+    if (!content || !contentRef.current || !highlighterRef.current) return;
+
+    const applyHighlighting = () => {
+      const codeBlocks = contentRef.current!.querySelectorAll('pre code');
+
+      codeBlocks.forEach((block) => {
+        const codeElement = block as HTMLElement;
+        const preElement = codeElement.parentElement as HTMLPreElement;
+
+        // Extract language from class name (e.g., "language-typescript")
+        const className = codeElement.className;
+        const langMatch = className.match(/language-(\w+)/);
+        const lang = langMatch ? langMatch[1] : 'text';
+
+        // Get code content
+        const code = codeElement.textContent || '';
+
+        try {
+          // Generate highlighted HTML
+          const html = highlighterRef.current!.codeToHtml(code, {
+            lang: lang,
+            theme: 'github-light',
+          });
+
+          // Replace pre element with highlighted version
+          const tempDiv = document.createElement('div');
+          tempDiv.innerHTML = html;
+          const highlightedPre = tempDiv.firstChild as HTMLPreElement;
+
+          if (highlightedPre) {
+            // Copy any existing classes
+            highlightedPre.className = preElement.className;
+            preElement.replaceWith(highlightedPre);
+          }
+        } catch (err) {
+          console.error(`Failed to highlight code block (lang: ${lang}):`, err);
+        }
+      });
+    };
+
+    // Small delay to ensure DOM is ready
+    setTimeout(applyHighlighting, 50);
+  }, [content]);
 
   if (isLoading) {
     return (
@@ -170,6 +250,7 @@ const ContentReader: React.FC = () => {
 
             {/* Article Body */}
             <div
+              ref={contentRef}
               className="reading-content prose prose-lg max-w-none"
               dangerouslySetInnerHTML={{ __html: content.html }}
             />
