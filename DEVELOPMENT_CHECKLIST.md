@@ -2368,14 +2368,112 @@ validated
 - Index optimization for common query patterns
 - Content module updated with all new entities
 
-### 2.4 Basic Block Editor (MVP)
+### 2.4 KHML Markup Language Implementation ✅
 
-- [ ] CMS-001: Block-based editor architecture (Slate.js/Lexical)
-- [ ] CMS-002: Text formatting capabilities
-- [ ] CMS-003: Code block functionality
-- [ ] CMS-004: Image block
-- [ ] MFE-EDITOR-001: Editor MFE project setup
-- [ ] MFE-EDITOR-002: Block editor implementation
+- [x] **KHML-001**: KHML Language Specification (2026-01-27)
+  - Comprehensive KHML specification document (800+ lines)
+  - LaTeX-inspired syntax with @ prefix for blocks
+  - 40+ block types (text, code, educational, media, interactive, tables, lists)
+  - Inline formatting support (bold, italic, code, mark, kbd, math)
+  - Document structure (@article, @meta, @content)
+  - Complete EBNF grammar definition
+  - Full examples demonstrating all features
+- [x] **KHML-002**: TypeScript Type System (2026-01-27)
+  - Complete type definitions (380 lines)
+  - BlockType enum with 40+ values
+  - InlineType enum for inline formatting
+  - Block interfaces (ParagraphBlock, HeadingBlock, CodeBlock, etc.)
+  - KHMLDocument, ParseResult, ParseError interfaces
+  - Token types and lexer interfaces
+  - Full type safety throughout pipeline
+- [x] **KHML-003**: Lexer Implementation (2026-01-27)
+  - Character-by-character tokenization (300 lines)
+  - Token stream generation
+  - Special character handling (@, {}, @@@ delimiters)
+  - String parsing with escape sequences
+  - Number and identifier parsing
+  - Comment support (// and /\* \*/)
+  - Position tracking (line, column) for error reporting
+- [x] **KHML-004**: Parser Implementation (2026-01-27)
+  - Recursive descent parser (520 lines)
+  - Token-to-JSONB conversion
+  - Block-specific parsers for all 40+ types
+  - Attribute parsing (key:value pairs)
+  - Text content extraction with inline format detection
+  - Comprehensive error recovery
+  - Block ID auto-generation
+- [x] **KHML-005**: HTML Renderer (2026-01-27)
+  - JSONB-to-HTML conversion (420 lines)
+  - Semantic HTML5 output
+  - Block-specific renderers
+  - Inline formatting application
+  - Accessibility attributes (ARIA, roles)
+  - XSS prevention via HTML sanitization
+  - Syntax highlighter integration (Prism.js)
+  - Math renderer integration (KaTeX)
+  - Configurable options (classPrefix, sanitize)
+- [x] **KHML-006**: NestJS Service Layer (2026-01-27)
+  - KHMLService with dependency injection (180 lines)
+  - parseToJSONB() - Parse KHML to structured JSONB
+  - renderToHTML() - One-step parse and render
+  - renderJSONBToHTML() - Render pre-parsed JSONB
+  - validate() - Syntax validation without parsing
+  - extractPlainText() - Text extraction for search indexing
+  - extractMetadata() - Auto-extract title, author, tags
+  - convertFromMarkdown() - Basic MD→KHML converter
+- [x] **KHML-007**: REST API Controller (2026-01-27)
+  - 6 API endpoints with full Swagger documentation (180 lines)
+  - POST /khml/parse - KHML → JSONB (for database storage)
+  - POST /khml/render - KHML → HTML (for display)
+  - POST /khml/validate - Syntax validation
+  - POST /khml/extract-text - Plain text extraction
+  - POST /khml/extract-metadata - Metadata extraction
+  - POST /khml/convert/markdown - Markdown conversion
+- [x] **KHML-008**: Module Integration (2026-01-27)
+  - KHMLModule created and exported
+  - Imported into app.module.ts
+  - Service available for dependency injection
+  - Controller registered for API routing
+- [x] **KHML-009**: Documentation & Examples (2026-01-27)
+  - README_PHASE_2.4.md comprehensive guide
+  - 4 example KHML documents (simple-article, code-tutorial, definition-guide, interactive-lesson)
+  - Quick start guide with API usage
+  - Complete block types reference
+  - Inline formatting guide
+  - API endpoint documentation with curl examples
+  - Integration guide for Content Service
+  - Migration guide from Markdown
+  - Best practices and troubleshooting
+
+**Technical Implementation**:
+
+- Custom markup language: KHML (KHub Markup Language) v1.0
+- Architecture: Lexer → Parser → JSONB → Renderer → HTML pipeline
+- Total implementation: ~2,790 lines of TypeScript
+- 11 new files created:
+  - KHML_SPECIFICATION.md (800+ lines)
+  - src/khml/types/khml.types.ts (380 lines)
+  - src/khml/lexer/khml.lexer.ts (300 lines)
+  - src/khml/parser/khml.parser.ts (520 lines)
+  - src/khml/renderer/khml.renderer.ts (420 lines)
+  - src/khml/services/khml.service.ts (180 lines)
+  - src/khml/controllers/khml.controller.ts (180 lines)
+  - src/khml/khml.module.ts (10 lines)
+  - README_PHASE_2.4.md (comprehensive documentation)
+  - 4 example KHML documents
+- Storage: Parsed JSONB in Article.body and Guide.body fields
+- Integration: Ready for frontend editor (Phase 2.5)
+- API: 6 REST endpoints with Swagger documentation
+- Search: Plain text extraction for full-text search
+- Migration: Basic Markdown → KHML converter included
+
+**Phase 2.4 Deliverables**: ✅
+
+- Complete KHML language specification
+- Full lexer/parser/renderer implementation
+- NestJS service layer with API endpoints
+- Comprehensive documentation and examples
+- Ready for frontend editor integration
 
 ### 2.5 Content Editor MFE
 

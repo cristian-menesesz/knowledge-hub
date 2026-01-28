@@ -1,0 +1,284 @@
+@guide{
+  @meta{
+    title: "Data Structures: Array vs Linked List"
+    author: "Dr. Sarah Johnson"
+    tags: ["data-structures", "fundamentals", "comparison"]
+    difficulty: beginner
+    estimatedReadingTime: 20
+  }
+
+  @content{
+    @h1{Understanding Arrays and Linked Lists}
+
+    @p{
+      Arrays and linked lists are two fundamental data structures. Let's explore 
+      their definitions, characteristics, and use cases.
+    }
+
+    @h2{Definitions}
+
+    @definition{
+      term: "Array"
+      category: "Data Structure"
+      @@@
+      A contiguous block of memory that stores elements of the same type. 
+      Elements are accessed by their index in **O(1)** time.
+      
+      **Key Properties**:
+      - Fixed or dynamic size
+      - Sequential memory allocation
+      - Constant-time random access
+      - Cache-friendly due to locality
+      @@@
+    }
+
+    @definition{
+      term: "Linked List"
+      category: "Data Structure"
+      @@@
+      A linear collection of nodes where each node contains data and a reference (link) 
+      to the next node in the sequence.
+      
+      **Key Properties**:
+      - Dynamic size (grows/shrinks easily)
+      - Non-contiguous memory allocation
+      - O(n) access time for arbitrary elements
+      - O(1) insertion/deletion at known positions
+      @@@
+    }
+
+    @h2{Visual Comparison}
+
+    @diagram{
+      type: "mermaid"
+      caption: "Array vs Linked List Memory Layout"
+      @@@
+graph LR
+    subgraph Array
+        A1[0: 'A'] --> A2[1: 'B']
+        A2 --> A3[2: 'C']
+        A3 --> A4[3: 'D']
+    end
+    
+    subgraph LinkedList
+        L1["Node1<br/>data: 'A'<br/>next: →"] --> L2["Node2<br/>data: 'B'<br/>next: →"]
+        L2 --> L3["Node3<br/>data: 'C'<br/>next: →"]
+        L3 --> L4["Node4<br/>data: 'D'<br/>next: null"]
+    end
+      @@@
+    }
+
+    @h2{Performance Comparison}
+
+    @table{
+      caption: "Time Complexity Comparison"
+      @@@
+| Operation         | Array   | Linked List |
+|-------------------|---------|-------------|
+| Access by index   | O(1)    | O(n)        |
+| Search            | O(n)    | O(n)        |
+| Insert at start   | O(n)    | O(1)        |
+| Insert at end     | O(1)*   | O(1)**      |
+| Insert at middle  | O(n)    | O(1)***     |
+| Delete at start   | O(n)    | O(1)        |
+| Delete at end     | O(1)    | O(n)****    |
+| Delete at middle  | O(n)    | O(1)***     |
+
+*Amortized O(1) for dynamic arrays  
+**O(n) without tail pointer  
+***O(1) if position is known, O(n) to find position  
+****O(n) for singly linked list, O(1) for doubly linked list with tail pointer
+      @@@
+    }
+
+    @h2{When to Use Each}
+
+    @tabs{
+      @tab{
+        label: "Use Arrays When"
+        @@@
+        @list{
+          type: unordered
+          @@@
+          - You need **fast random access** by index
+          - The size is **known in advance** or changes infrequently
+          - Memory locality is important for **cache performance**
+          - You're implementing **stack or queue** data structures
+          - Iterating through all elements frequently
+          @@@
+        }
+
+        @example{
+          difficulty: easy
+          @@@
+          **Example Use Cases**:
+          - Storing a fixed list of user preferences
+          - Implementing a dynamic array (ArrayList in Java)
+          - Matrix operations
+          - Lookup tables
+          @@@
+        }
+        @@@
+      }
+
+      @tab{
+        label: "Use Linked Lists When"
+        @@@
+        @list{
+          type: unordered
+          @@@
+          - You need **frequent insertions/deletions** at the beginning
+          - The size is **unknown or highly variable**
+          - You don't need random access by index
+          - Memory fragmentation is a concern
+          - Implementing certain ADTs (queues, stacks)
+          @@@
+        }
+
+        @example{
+          difficulty: easy
+          @@@
+          **Example Use Cases**:
+          - Implementing a queue or stack
+          - Undo functionality in applications
+          - Managing free memory blocks in OS
+          - Representing sparse matrices
+          @@@
+        }
+        @@@
+      }
+    }
+
+    @h2{Code Examples}
+
+    @collapsible{
+      summary: "Array Implementation (Python)"
+      @@@
+      @code{
+        lang: "python"
+        @@@
+class DynamicArray:
+    def __init__(self):
+        self.capacity = 4
+        self.size = 0
+        self.arr = [None] * self.capacity
+    
+    def append(self, value):
+        """Add element at the end - O(1) amortized"""
+        if self.size == self.capacity:
+            self._resize()
+        self.arr[self.size] = value
+        self.size += 1
+    
+    def insert(self, index, value):
+        """Insert at specific index - O(n)"""
+        if index < 0 or index > self.size:
+            raise IndexError("Index out of bounds")
+        if self.size == self.capacity:
+            self._resize()
+        # Shift elements right
+        for i in range(self.size, index, -1):
+            self.arr[i] = self.arr[i - 1]
+        self.arr[index] = value
+        self.size += 1
+    
+    def _resize(self):
+        """Double capacity when full"""
+        self.capacity *= 2
+        new_arr = [None] * self.capacity
+        for i in range(self.size):
+            new_arr[i] = self.arr[i]
+        self.arr = new_arr
+        @@@
+      }
+      @@@
+    }
+
+    @collapsible{
+      summary: "Linked List Implementation (Python)"
+      @@@
+      @code{
+        lang: "python"
+        @@@
+class Node:
+    def __init__(self, data):
+        self.data = data
+        self.next = None
+
+class LinkedList:
+    def __init__(self):
+        self.head = None
+        self.size = 0
+    
+    def prepend(self, data):
+        """Add at start - O(1)"""
+        new_node = Node(data)
+        new_node.next = self.head
+        self.head = new_node
+        self.size += 1
+    
+    def insert_after(self, prev_node, data):
+        """Insert after given node - O(1)"""
+        if not prev_node:
+            raise ValueError("Previous node cannot be None")
+        new_node = Node(data)
+        new_node.next = prev_node.next
+        prev_node.next = new_node
+        self.size += 1
+    
+    def delete_node(self, key):
+        """Delete first occurrence - O(n)"""
+        current = self.head
+        
+        # If head holds the key
+        if current and current.data == key:
+            self.head = current.next
+            self.size -= 1
+            return
+        
+        # Search for key
+        prev = None
+        while current and current.data != key:
+            prev = current
+            current = current.next
+        
+        # Key not found
+        if not current:
+            return
+        
+        # Unlink the node
+        prev.next = current.next
+        self.size -= 1
+        @@@
+      }
+      @@@
+    }
+
+    @h2{Summary}
+
+    @quote{
+      author: "Donald Knuth"
+      @@@
+      The choice of data structure is one of the most important decisions in algorithm design.
+      @@@
+    }
+
+    @info{
+      **Key Takeaway**: Neither array nor linked list is universally better. 
+      Choose based on your specific use case:
+      - **Arrays**: Fast access, simple, cache-friendly
+      - **Linked Lists**: Dynamic size, efficient insertions at start
+    }
+
+    @h2{Further Reading}
+
+    @list{
+      type: unordered
+      @@@
+      - @link{url: "/guides/advanced-data-structures" text: "Advanced Data Structures"}
+      - @link{url: "/guides/cache-efficiency" text: "Understanding Cache Efficiency"}
+      - @link{url: "/tutorials/big-o-notation" text: "Big O Notation Explained"}
+      @@@
+    }
+  }
+}

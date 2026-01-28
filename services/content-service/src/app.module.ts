@@ -5,6 +5,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { HealthModule } from './health/health.module';
 import { ContentModule } from './content/content.module';
 import { DraftModule } from './draft/draft.module';
+import { KHMLModule } from './khml/khml.module';
 import { Content } from './content/entities/content.entity';
 import { ContentVersion } from './content/entities/content-version.entity';
 
@@ -46,6 +47,7 @@ import { ContentVersion } from './content/entities/content-version.entity';
     HealthModule,
     ContentModule,
     DraftModule,
+    KHMLModule,
   ],
 })
 export class AppModule {}

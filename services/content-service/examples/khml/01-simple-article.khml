@@ -1,0 +1,52 @@
+@article{
+  @meta{
+    title: "Getting Started with Binary Search"
+    author: "Jane Doe"
+    tags: ["algorithms", "search", "tutorial"]
+    difficulty: beginner
+  }
+
+  @content{
+    @h1{Introduction to Binary Search}
+    
+    @p{
+      Binary search is one of the most fundamental algorithms in computer science. 
+      It's an efficient way to find a specific value in a **sorted** array or list.
+    }
+
+    @note{
+      This article assumes you have basic knowledge of arrays and loops in programming.
+    }
+
+    @h2{How Binary Search Works}
+
+    @p{
+      The algorithm works by repeatedly dividing the search interval in half. 
+      Here's the basic idea:
+    }
+
+    @list{
+      type: ordered
+      @@@
+      - Start with the entire array
+      - Compare the target value with the middle element
+      - If they match, you've found it!
+      - If target is less than middle, search the left half
+      - If target is greater than middle, search the right half
+      - Repeat until found or interval is empty
+      @@@
+    }
+
+    @h2{Time Complexity}
+
+    @p{
+      Binary search has a time complexity of *O(log n)*, which is much better than 
+      linear search's *O(n)*. This means it scales **extremely well** for large datasets.
+    }
+
+    @tip{
+      Binary search only works on **sorted** data. If your data isn't sorted, 
+      you'll need to sort it first (which costs O(n log n)) or use a different search method.
+    }
+  }
+}
